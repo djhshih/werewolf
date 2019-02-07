@@ -1,4 +1,3 @@
-A sample command-line application.
+# Werewolf
 
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+Work in progress.
