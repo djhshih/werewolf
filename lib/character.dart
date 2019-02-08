@@ -1,5 +1,6 @@
 import 'dart:math';
 
+  // TODO implement real choice by user
 int chooseRandom(int n) {
     Random r = new Random();
     return r.nextInt(n);
@@ -49,7 +50,6 @@ class Seer extends Character {
     print(' INFO: Player $index sees ${cs.character(i)}.');
   }
   
-  // TODO get a target from user
   int chooseTarget(Characters cs) {
     int i = 0;
     do {
@@ -74,7 +74,6 @@ class Robber extends Character {
     print(' INFO: Player $index sees ${cs.character(index)}.');
   }
   
-  // TODO get a target from user
   int chooseTarget(Characters cs) {
     int i = 0;
     do {
@@ -98,7 +97,6 @@ class Troublemaker extends Character {
     print('DEBUG: Player $index (${this}) swaps two other players\' cards (${i[0]}, ${i[1]}).');
   }
 
-  // TODO get two targets from user
   List<int> chooseTargets(Characters cs) {
     List<int> xs = new List(2);
     do {
@@ -128,7 +126,6 @@ class Drunk extends Character {
     print('DEBUG: Player $index (${this}) swaps own card with an unclaimed card ($i).');
   } 
   
-    // TODO get a unclaimed target
   int chooseTarget(Characters cs) {
     return choose(cs.characters.length - cs.nPlayers) + cs.nPlayers;
   }
@@ -190,7 +187,6 @@ class Doppelganger extends Character {
     print(' INFO: Player $index becomes ${cs.character(index)}.');
   } 
   
-  // TODO get a target from user
   int chooseTarget(Characters cs) {
     int i = 0;
     do {
