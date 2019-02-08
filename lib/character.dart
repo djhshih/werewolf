@@ -1,11 +1,11 @@
 import 'dart:math';
 
-  // TODO implement real choice by user
 int chooseRandom(int n) {
     Random r = new Random();
     return r.nextInt(n);
 }
 
+// TODO implement real choice by user
 var choose = chooseRandom;
 
 enum Team { Independent, Villager, Werewolf }
