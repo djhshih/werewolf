@@ -53,11 +53,11 @@ class Game {
       votes[i] = r.nextInt(cs.nPlayers); 
     }
     
-    return lynch(votes);
+    return lynch(cs, votes);
   }
   
   // Lynch players with highest votes.
-  List<int> lynch(List<int> votes) {
+  List<int> lynch(Characters cs, List<int> votes) {
     int n = votes.length;
     
     // count the votes
@@ -70,32 +70,40 @@ class Game {
     
     int maxCount = counts.reduce(max);
     
-    List<int> dead = new List();
+    List<int> deads = new List();
     const int minVotes = 2;
     // find all players with highest vote and at least two votes
     for (int i = 0; i < n; i++) {
       if (counts[i] == maxCount && counts[i] >= minVotes) {
-        dead.add(i);
+        deads.add(i);
       }
     }
     
-    print(' INFO: Players ${dead} are lynched.');
+    // Kill characters that lynched hunters vote for.
+    List<int> taken = new List();
+    for (int i in deads) {
+      if (cs.character(i) is Hunter) {
+        print(' INFO: Hunter $i takes down player ${votes[i]}.');
+        taken.add(votes[i]);
+      }
+    }
+    // NB duplicate can occur here, but it is inconsequential
+    deads.addAll(taken);
     
-    // TODO  Enforce rule that hunter also kills
-    //       the player whom he/she votes for.
+    print(' INFO: Players ${deads} are lynched.');
     
-    return dead;
+    return deads;
   }
   
   // Judge players who win.
-  List<int> judge(Characters cs, List<int> dead) {
+  List<int> judge(Characters cs, List<int> deads) {
     List<int> winners = new List();
     
     bool villagersWin = false;
     bool wolvesWin = false;
   
     bool tannerDied = false;
-    for (int i in dead) {
+    for (int i in deads) {
       if (cs.character(i) is Tanner) {
         // NB Only tanners that died wins.
         print(' INFO: Tanner ($i) wins.');
@@ -106,13 +114,13 @@ class Game {
   
     int nWolves = cs.nWolves;
     if (nWolves == 0) {
-      if (dead.isEmpty) {
+      if (deads.isEmpty) {
         print(' INFO: Villagers win.');
         villagersWin = true;
       } else {
         print(' INFO: Villagers lose.');
         // NB Alive minions win.
-        for (int i in dead) {
+        for (int i in deads) {
           if (cs.character(i) is Minion) {
             winners.add(i);
             print(' INFO: Minion ($i) wins.');
@@ -121,7 +129,7 @@ class Game {
       }
     } else {
       bool wolfDied = false;
-      for (int i in dead) {
+      for (int i in deads) {
         if (cs.character(i) is Werewolf) {
           wolfDied = true;
           break;
