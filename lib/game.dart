@@ -65,6 +65,8 @@ class Game {
     for (int vote in votes) {
       counts[vote] += 1;
     }
+
+    print('DEBUG: Votes $counts');
     
     int maxCount = counts.reduce(max);
     
@@ -72,7 +74,7 @@ class Game {
     const int minVotes = 2;
     // find all players with highest vote and at least two votes
     for (int i = 0; i < n; i++) {
-      if (counts[i] == maxCount && counts[i] > minVotes) {
+      if (counts[i] == maxCount && counts[i] >= minVotes) {
         dead.add(i);
       }
     }
@@ -87,40 +89,78 @@ class Game {
   
   // Judge players who win.
   List<int> judge(Characters cs, List<int> dead) {
+    List<int> winners = new List();
+    
+    bool villagersWin = false;
+    bool wolvesWin = false;
+  
+    bool tannerDied = false;
     for (int i in dead) {
       if (cs.character(i) is Tanner) {
+        // NB Only tanners that died wins.
         print(' INFO: Tanner ($i) wins.');
-        // NB  Do not enforce the silly rule that
-        //     werewolves lose when Tanner dies.
-      } 
+        winners.add(i);
+        tannerDied = true;
+      }
     }
   
     int nWolves = cs.nWolves;
     if (nWolves == 0) {
       if (dead.isEmpty) {
         print(' INFO: Villagers win.');
+        villagersWin = true;
       } else {
         print(' INFO: Villagers lose.');
+        // NB Alive minions win.
+        for (int i in dead) {
+          if (cs.character(i) is Minion) {
+            winners.add(i);
+            print(' INFO: Minion ($i) wins.');
+          }
+        }
       }
     } else {
-      bool atLeastOneWolfDied = false;
+      bool wolfDied = false;
       for (int i in dead) {
         if (cs.character(i) is Werewolf) {
-          atLeastOneWolfDied = true;
+          wolfDied = true;
           break;
         }
       }
-      if (atLeastOneWolfDied) {
+      if (wolfDied) {
         print(' INFO: Villagers win.');
+        villagersWin = true;
         print(' INFO: Werewolves lose.');
       } else {
         print(' INFO: Villagers lose.');
-        print(' INFO: Werewolves win.');
+        if (tannerDied) {
+          print(' INFO: Werewolves lose.');
+        } else {
+          print(' INFO: Werewolves win.');
+          wolvesWin = true;
+        }
       }
     }
     
-    // TODO return list of winners
-    return new List();
+    // find all winners
+    if (villagersWin) {
+      for (int i = 0; i < cs.nPlayers; i++) {
+        if (cs.character(i).team == Team.Villager) {
+          winners.add(i);
+        }
+      }
+    }
+    if (wolvesWin) {
+      for (int i = 0; i < cs.nPlayers; i++) {
+        if (cs.character(i).team == Team.Werewolf) {
+          winners.add(i);
+        }
+      }
+    }
+
+    print(' INFO: Players $winners win.');
+    
+    return winners;
   }
 }
 

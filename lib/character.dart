@@ -7,28 +7,40 @@ int chooseRandom(int n) {
 
 var choose = chooseRandom;
 
+enum Team { Independent, Villager, Werewolf }
+
 class Character {
   int index;
+  Team team = Team.Independent;
+  
   void act(Characters cs) {
     return;
   }
+  
   Character make() => new Character();
 }
 
 class Villager extends Character {
+  Team team = Team.Villager;
+  
   Villager make() => new Villager();
 }
 
 class Werewolf extends Character {
+  Team team = Team.Werewolf;
+  
   void act(Characters cs) {
     List<int> xs = cs.find(this);
     print('DEBUG: Player $index (${this}) sees other werewolfs.');
     print(' INFO: Player $index sees players $xs awake.');
   }
+  
   Werewolf make() => new Werewolf();
 }
 
 class Seer extends Character {
+  Team team = Team.Villager;
+  
   void act(Characters cs) {
     int i = chooseTarget(cs);
 
@@ -51,6 +63,8 @@ class Seer extends Character {
 }
 
 class Robber extends Character {
+  Team team = Team.Villager;
+  
   void act(Characters cs) {
     
     int i = chooseTarget(cs);
@@ -74,6 +88,8 @@ class Robber extends Character {
 }
 
 class Troublemaker extends Character {
+  Team team = Team.Villager;
+  
   void act(Characters cs) {
     
     List<int> i = chooseTargets(cs);
@@ -103,6 +119,8 @@ class Tanner extends Character {
 }
 
 class Drunk extends Character {
+  Team team = Team.Villager;
+  
   void act(Characters cs) {
     int i = chooseTarget(cs); 
     cs.swap(index, i);
@@ -119,32 +137,43 @@ class Drunk extends Character {
 }
 
 class Hunter extends Character {
+  Team team = Team.Villager;
+  
   Hunter make() => new Hunter();
 }
 
 class Mason extends Character {
+  Team team = Team.Villager;
+  
   void act(Characters cs) {
     List<int> xs = cs.find(this);
     print('DEBUG: Player $index (${this}) sees other masons.');
     print(' INFO: Player $index sees players $xs awake.');
   } 
+  
   Mason make() => new Mason(); 
 }
 
 class Insomniac extends Character {
+  Team team = Team.Villager;
+  
   void act(Characters cs) {
     print('DEBUG: Player $index (${this}) sees own card.');
     print(' INFO: Player $index sees ${cs.character(index)}.');
   } 
+  
   Insomniac make() => new Insomniac();
 }
 
 class Minion extends Character {
+  Team team = Team.Werewolf;
+  
   void act(Characters cs) {
     List<int> xs = cs.find(new Werewolf());
     print('DEBUG: Player $index (${this}) sees the werewolves.');
     print(' INFO: Player $index sees that players $xs are werewolves.');
   } 
+  
   Minion make() => new Minion();
 }
 
