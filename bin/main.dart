@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:cli/game.dart';
-import 'package:cli/character.dart';
+import 'package:werewolf/game.dart';
+import 'package:werewolf/character.dart';
 
 main(List<String> arguments) {
   List<Character> cards = [
