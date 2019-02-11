@@ -55,7 +55,8 @@ message Ballot {
 
 message Verdict {
     Status status = 1;
-    repeated uint32 winners = 2;
-    repeated uint32 deads = 3;
-    repeated Role roles = 4;
+    repeated uint32 votes = 2;
+    repeated uint32 winners = 3;
+    repeated uint32 deads = 4;
+    repeated Role roles = 5;
 }

@@ -76,9 +76,10 @@ const Verdict$json = const {
   '1': 'Verdict',
   '2': const [
     const {'1': 'status', '3': 1, '4': 1, '5': 14, '6': '.werewolf.Status', '10': 'status'},
-    const {'1': 'winners', '3': 2, '4': 3, '5': 13, '10': 'winners'},
-    const {'1': 'deads', '3': 3, '4': 3, '5': 13, '10': 'deads'},
-    const {'1': 'roles', '3': 4, '4': 3, '5': 14, '6': '.werewolf.Role', '10': 'roles'},
+    const {'1': 'votes', '3': 2, '4': 3, '5': 13, '10': 'votes'},
+    const {'1': 'winners', '3': 3, '4': 3, '5': 13, '10': 'winners'},
+    const {'1': 'deads', '3': 4, '4': 3, '5': 13, '10': 'deads'},
+    const {'1': 'roles', '3': 5, '4': 3, '5': 14, '6': '.werewolf.Role', '10': 'roles'},
   ],
 };
 

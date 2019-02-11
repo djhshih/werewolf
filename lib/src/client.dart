@@ -45,6 +45,7 @@ class Client {
     Verdict verdict = await stub.vote(ballot);
     
     print('Status: ${verdict.status}');
+    print('Votes: ${verdict.votes}');
     print('Winners: ${verdict.winners}');
     print('Deads: ${verdict.deads}');
     print('Roles: ${verdict.roles}');

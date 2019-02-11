@@ -101,11 +101,14 @@ class WerewolfService extends WerewolfServiceBase {
     if (!game.castVote(request.player, request.target)) {
       verdict.status = Status.INVALID;
     }
+    // mark player as ready 
+    game.setReady(request.player);
     
     // wait until game deems day phase is complete
     await game.waitForPhase(GamePhase.Finale);
     
     verdict
+      ..votes.addAll(game.votes)
       ..winners.addAll(game.winners)
       ..deads.addAll(game.deads)
       ..roles.addAll( game.finals.characters.map(mapCharacterToRole) );

@@ -169,9 +169,10 @@ class Ballot extends $pb.GeneratedMessage {
 class Verdict extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = new $pb.BuilderInfo('Verdict', package: const $pb.PackageName('werewolf'))
     ..e<Status>(1, 'status', $pb.PbFieldType.OE, Status.OK, Status.valueOf, Status.values)
-    ..p<int>(2, 'winners', $pb.PbFieldType.PU3)
-    ..p<int>(3, 'deads', $pb.PbFieldType.PU3)
-    ..pp<Role>(4, 'roles', $pb.PbFieldType.PE, Role.$checkItem, null, Role.valueOf, Role.values)
+    ..p<int>(2, 'votes', $pb.PbFieldType.PU3)
+    ..p<int>(3, 'winners', $pb.PbFieldType.PU3)
+    ..p<int>(4, 'deads', $pb.PbFieldType.PU3)
+    ..pp<Role>(5, 'roles', $pb.PbFieldType.PE, Role.$checkItem, null, Role.valueOf, Role.values)
     ..hasRequiredFields = false
   ;
 
@@ -195,10 +196,12 @@ class Verdict extends $pb.GeneratedMessage {
   bool hasStatus() => $_has(0);
   void clearStatus() => clearField(1);
 
-  List<int> get winners => $_getList(1);
+  List<int> get votes => $_getList(1);
 
-  List<int> get deads => $_getList(2);
+  List<int> get winners => $_getList(2);
 
-  List<Role> get roles => $_getList(3);
+  List<int> get deads => $_getList(3);
+
+  List<Role> get roles => $_getList(4);
 }
 

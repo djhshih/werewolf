@@ -87,11 +87,11 @@ class Game {
     }
   }
   
-  // TODO Add timeout limit
+  // TODO Fix condition check. Add timeout limit
   Future<void> waitForPhase(GamePhase targetPhase) async {
-    do {
+    //do {
       Future.delayed(Duration(seconds: 1));
-    } while (phase != targetPhase);
+    //} while (phase != targetPhase);
   }
   
   // Night phase: wake up players in order of their characters.
