@@ -59,7 +59,8 @@ class WerewolfService extends WerewolfServiceBase {
   }
 
   Future<Effect> act(grpc.ServiceCall call, Action request) async {
-    if (game.phase != GamePhase.Day) {
+    if (game.phase != GamePhase.Night) {
+      print('ERROR: Cannot act in ${game.phase}');
       return new Effect()..status = Status.ERROR;
     }
     
@@ -91,6 +92,7 @@ class WerewolfService extends WerewolfServiceBase {
   
   Future<Verdict> vote(grpc.ServiceCall call, Ballot request) async {
     if (game.phase != GamePhase.Day) {
+      print('ERROR: Cannot vote in ${game.phase}');
       return new Verdict()..status = Status.ERROR;
     }
     
@@ -131,6 +133,7 @@ class Server {
       new Doppelganger(),
     ];
     final service = new WerewolfService(cards);
+    service.init();
     
     final server = new grpc.Server([service]);
     await server.serve(port: 8888);

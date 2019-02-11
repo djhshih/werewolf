@@ -22,7 +22,7 @@ class Game {
   List<bool> ready;
   List<int> votes;
   
-  GamePhase phase = GamePhase.Night;
+  GamePhase phase;
   
   List<int> deads;
   List<int> winners;
@@ -33,6 +33,8 @@ class Game {
     originals.shuffle(r);
     
     int nPlayers = originals.nPlayers;
+    
+    phase = GamePhase.Night;
     
     targetSets = new List.filled(nPlayers, []);
     revelationSets = new List.filled(nPlayers, []);
