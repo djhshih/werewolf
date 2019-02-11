@@ -53,6 +53,11 @@ class WerewolfService extends WerewolfServiceBase {
     return Role.UNKNOWN;
   }
 
+  // TODO Implement server register
+  Future<Slot> register(grpc.ServiceCall call, Slot request) async {
+    return request;
+  }
+
   Future<Effect> act(grpc.ServiceCall call, Action request) async {
     if (game.phase != GamePhase.Day) {
       return new Effect()..status = Status.ERROR;

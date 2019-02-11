@@ -3,6 +3,7 @@ syntax = "proto3";
 package werewolf;
 
 service Werewolf {
+    rpc Register(Slot) returns (Slot) {}
     rpc Act(Action) returns (Effect) {}
     rpc Vote(Ballot) returns (Verdict) {}
 }
@@ -27,6 +28,10 @@ enum Status {
     OK = 0;
     INVALID = 1;
     ERROR = 2;
+}
+
+message Slot {
+    uint32 player = 1;
 }
 
 message Action {

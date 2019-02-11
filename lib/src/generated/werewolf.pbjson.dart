@@ -32,6 +32,13 @@ const Status$json = const {
   ],
 };
 
+const Slot$json = const {
+  '1': 'Slot',
+  '2': const [
+    const {'1': 'player', '3': 1, '4': 1, '5': 13, '10': 'player'},
+  ],
+};
+
 const Action$json = const {
   '1': 'Action',
   '2': const [

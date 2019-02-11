@@ -13,6 +13,33 @@ import 'werewolf.pbenum.dart';
 
 export 'werewolf.pbenum.dart';
 
+class Slot extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = new $pb.BuilderInfo('Slot', package: const $pb.PackageName('werewolf'))
+    ..a<int>(1, 'player', $pb.PbFieldType.OU3)
+    ..hasRequiredFields = false
+  ;
+
+  Slot() : super();
+  Slot.fromBuffer(List<int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  Slot.fromJson(String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  Slot clone() => new Slot()..mergeFromMessage(this);
+  Slot copyWith(void Function(Slot) updates) => super.copyWith((message) => updates(message as Slot));
+  $pb.BuilderInfo get info_ => _i;
+  static Slot create() => new Slot();
+  Slot createEmptyInstance() => create();
+  static $pb.PbList<Slot> createRepeated() => new $pb.PbList<Slot>();
+  static Slot getDefault() => _defaultInstance ??= create()..freeze();
+  static Slot _defaultInstance;
+  static void $checkItem(Slot v) {
+    if (v is! Slot) $pb.checkItemFailed(v, _i.qualifiedMessageName);
+  }
+
+  int get player => $_get(0, 0);
+  set player(int v) { $_setUnsignedInt32(0, v); }
+  bool hasPlayer() => $_has(0);
+  void clearPlayer() => clearField(1);
+}
+
 class Action extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = new $pb.BuilderInfo('Action', package: const $pb.PackageName('werewolf'))
     ..a<int>(1, 'player', $pb.PbFieldType.OU3)
