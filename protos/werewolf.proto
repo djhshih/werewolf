@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package werewolf;
+
+service Werewolf {
+    rpc Act(Action) returns (Effect) {}
+    rpc Vote(Ballot) returns (Verdict) {}
+}
+
+enum Role {
+    UNKNOWN = 0;
+    VILLAGER = 1;
+    WEREWOLF = 2;
+    SEER = 3;
+    ROBBER = 4;
+    TROUBLEMAKER = 5;
+    TANNER = 6;
+    DRUNK = 7;
+    HUNTER = 8;
+    MASON = 9;
+    INSOMNIAC = 10;
+    MINION = 11;
+    DOPPELGANGER = 12;
+}
+
+enum Status {
+    OK = 0;
+    INVALID = 1;
+    ERROR = 2;
+}
+
+message Action {
+    uint32 player = 1;
+    repeated uint32 targets = 2;
+}
+
+message Effect {
+    Status status = 1;
+    message Revelation {
+        uint32 player = 1;
+        Role role = 2;
+    }
+    repeated Revelation revelations = 2;
+}
+
+message Ballot {
+    uint32 player = 1;
+    uint32 target = 2;
+}
+
+message Verdict {
+    Status status = 1;
+    repeated uint32 winners = 2;
+    repeated uint32 deads = 3;
+    repeated Role roles = 4;
+}

@@ -2,33 +2,118 @@ import 'character.dart';
 
 import 'dart:math';
 
+enum GamePhase {
+  Night, Day, Finale
+}
+
 class Game {
   Characters originals;
   Characters finals;
+  
+  // each player's targets
+  List<List<int>> targetSets;
+  
+  // each player's revelations
+  List<List<int>> revelationSets;
+
+  // each player's status
+  List<bool> playables;
+
+  List<bool> ready;
+  List<int> votes;
+  
+  GamePhase phase = GamePhase.Night;
+  
+  List<int> deads;
+  List<int> winners;
   
   Game(this.originals);
   
   void init(Random r) {
     originals.shuffle(r);
+    
+    int nPlayers = originals.nPlayers;
+    
+    targetSets = new List.filled(nPlayers, []);
+    revelationSets = new List.filled(nPlayers, []);
+    playables = new List.filled(nPlayers, false);
+    playables[0] = true;
+    resetReady();
+    
+    votes = new List.filled(nPlayers, -1);
   }
   
-  // Wake up players in order of their characters.
+  // Reset ready statuses of players.
+  void resetReady() {
+    // non-playable characters are ready by default
+    ready = playables.map((playable) => !playable).toList();
+  }
+  
+  bool validPlayer(int player) =>
+    player >= 0 && player <= originals.nPlayers;
+
+  bool castVote(int player, int target) {
+    if (validPlayer(player) && validPlayer(target)) {
+      votes[player] = target;
+      return true;
+    }
+    return false;
+  }
+  
+  // Set player as ready.
+  void setReady(int player) {
+    if (!validPlayer(player)) return;
+    ready[player] = true;
+    // check if every players is ready
+    if (ready.every((b) => b)) {
+      switch (phase) {
+        case GamePhase.Night:
+          night();
+          phase = GamePhase.Day;
+          resetReady();
+          break;
+        case GamePhase.Day:
+          day();
+          phase = GamePhase.Finale;
+          resetReady();
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  
+  // TODO Add timeout limit
+  Future<void> waitForPhase(GamePhase targetPhase) async {
+    do {
+      Future.delayed(Duration(seconds: 1));
+    } while (phase != targetPhase);
+  }
+  
+  // Night phase: wake up players in order of their characters.
   void night() {
-    originals.wake(new Doppelganger(), originals);
+    originals.wake(new Doppelganger(), originals, targetSets);
     
     // create a new copy of the characters to avoid characters'
     // actions to interfere during the night phase
     List<Character> finalCharacters = List.from(originals.characters);
     finals = new Characters(originals.nPlayers, finalCharacters);
     
-    originals.wake(new Werewolf(), finals);
-    originals.wake(new Minion(), finals);
-    originals.wake(new Mason(), finals);
-    originals.wake(new Seer(), finals);
-    originals.wake(new Robber(), finals);
-    originals.wake(new Troublemaker(), finals);
-    originals.wake(new Drunk(), finals);
-    originals.wake(new Insomniac(), finals);
+    originals.wake(new Werewolf(), finals, targetSets);
+    originals.wake(new Minion(), finals, targetSets);
+    originals.wake(new Mason(), finals, targetSets);
+    originals.wake(new Seer(), finals, targetSets);
+    originals.wake(new Robber(), finals, targetSets);
+    originals.wake(new Troublemaker(), finals, targetSets);
+    originals.wake(new Drunk(), finals, targetSets);
+    originals.wake(new Insomniac(), finals, targetSets);
+  }
+  
+  // Day phase; vote, lynch and judge.
+  void day() {
+    vote();
+    lynch();
+    judge();
   }
   
   // Reveal the characters.
@@ -45,19 +130,22 @@ class Game {
     }
   }
   
-  // TODO Implement actual voting
-  List<int> vote(Characters cs) {
+  // Complete votes.
+  void vote() {
+    final cs = finals; 
+
+    // if no vote, generate random vote
     Random r = Random();
-    List<int> votes = List(cs.nPlayers);
     for (int i = 0; i < cs.nPlayers; i++) {
-      votes[i] = r.nextInt(cs.nPlayers); 
+      if (votes[i] == -1) {
+        votes[i] = r.nextInt(cs.nPlayers); 
+      }
     }
-    
-    return lynch(cs, votes);
   }
   
   // Lynch players with highest votes.
-  List<int> lynch(Characters cs, List<int> votes) {
+  void lynch() {
+    final cs = finals; 
     int n = votes.length;
     
     // count the votes
@@ -70,7 +158,8 @@ class Game {
     
     int maxCount = counts.reduce(max);
     
-    List<int> deads = new List();
+    deads = new List();
+    
     const int minVotes = 2;
     // find all players with highest vote and at least two votes
     for (int i = 0; i < n; i++) {
@@ -91,13 +180,12 @@ class Game {
     deads.addAll(taken);
     
     print(' INFO: Players ${deads} are lynched.');
-    
-    return deads;
   }
   
   // Judge players who win.
-  List<int> judge(Characters cs, List<int> deads) {
-    List<int> winners = new List();
+  void judge() {
+    final cs = finals; 
+    winners = new List();
     
     bool villagersWin = false;
     bool wolvesWin = false;
@@ -167,8 +255,6 @@ class Game {
     }
 
     print(' INFO: Players $winners win.');
-    
-    return winners;
   }
 }
 

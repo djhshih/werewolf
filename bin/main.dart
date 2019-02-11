@@ -27,6 +27,5 @@ main(List<String> arguments) {
   game.reveal(game.originals);
   game.night();
   game.reveal(game.finals);
-  var dead = game.vote(game.finals);
-  game.judge(game.finals, dead);
+  game.day();
 }
