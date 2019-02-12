@@ -52,6 +52,8 @@ class Villager extends Character {
   Villager make() => new Villager();
 }
 
+// TODO Add revelations!
+
 class Werewolf extends Character {
   Team team = Team.Werewolf;
   

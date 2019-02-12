@@ -10,7 +10,6 @@ class Client {
   WerewolfClient stub;
 
   Future<void> main(List<String> args) async {
-    // TODO Generalize player id;
     if (args.length < 1) {
       print('usage: client <player-id>');
       return;
