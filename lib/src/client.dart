@@ -21,9 +21,9 @@ class Client {
       options: new CallOptions(timeout: new Duration(seconds: 30))
     );
     
-    Slot request = new Slot();
-    Slot slot = await stub.register(request);
+    Slot slot = await stub.register(new Slot());
     int player = slot.player;
+    int key = slot.key;
     print('INFO: Server assigned player id ${player}');
     
     Effect effect;
@@ -38,6 +38,7 @@ class Client {
       }
       Action action = new Action()
         ..player = player
+        ..key = key
         ..targets.addAll(targets);
       print('Action: ${action}');
       
@@ -63,6 +64,7 @@ class Client {
       
       Ballot ballot = new Ballot()
         ..player = player
+        ..key = key
         ..target = target;
         
       verdict = await stub.vote(ballot);

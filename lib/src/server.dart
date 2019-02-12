@@ -55,6 +55,8 @@ class WerewolfService extends WerewolfServiceBase {
     return Role.UNKNOWN;
   }
 
+  // TODO reveal to the player his/her card.
+  //      need a different return type!
   Future<Slot> register(grpc.ServiceCall call, Slot request) async {
     // Assign a secret key that the requester needs to subsequent interactions
     Slot response = new Slot();
@@ -84,7 +86,7 @@ class WerewolfService extends WerewolfServiceBase {
     } else {
       // check if key matches
       int player = request.player;
-      if (keys.containsKey(player) && keys[player] == request.key) {
+      if (checkKey(player, request.key)) {
         // re-register player
         game.playables[player] = true;
         game.ready[player] = false;
@@ -95,6 +97,10 @@ class WerewolfService extends WerewolfServiceBase {
     print('DEBUG: game.ready: ${game.ready}');
     return response;
   }
+  
+  bool checkKey(int player, int key) {
+    return keys.containsKey(player) && keys[player] == key;
+  }
 
   Future<Effect> act(grpc.ServiceCall call, Action request) async {
     int player = request.player; 
@@ -102,6 +108,10 @@ class WerewolfService extends WerewolfServiceBase {
     
     if (!game.validPlayer(player)) {
       return effect..status = Status.INVALID;
+    }
+    
+    if (!checkKey(player, request.key)) {
+      return effect..status = Status.ERROR;
     }
     
     if (game.phase == GamePhase.Night && !game.ready[player]) {
@@ -137,6 +147,14 @@ class WerewolfService extends WerewolfServiceBase {
   Future<Verdict> vote(grpc.ServiceCall call, Ballot request) async {
     Verdict verdict = new Verdict(); 
     int player = request.player;
+    
+    if (!game.validPlayer(player)) {
+      return verdict..status = Status.INVALID;
+    }
+    
+    if (!checkKey(player, request.key)) {
+      return verdict..status = Status.ERROR;
+    }
   
     if (game.phase == GamePhase.Day && !game.ready[player]) {
       if (game.castVote(player, request.target)) {
