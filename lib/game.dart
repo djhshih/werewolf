@@ -41,6 +41,8 @@ class Game {
     playables = new List.filled(nPlayers, false);
     // TODO Make this more general. Only first player is playable for now.
     playables[0] = true;
+    playables[1] = true;
+    print('INFO: playables: $playables');
     
     resetReady();
     
@@ -54,7 +56,7 @@ class Game {
   }
   
   bool validPlayer(int player) =>
-    player >= 0 && player <= originals.nPlayers;
+    player >= 0 && player < originals.nPlayers;
 
   bool castVote(int player, int target) {
     if (validPlayer(player) && validPlayer(target)) {
@@ -68,7 +70,11 @@ class Game {
   void setReady(int player) {
     if (!validPlayer(player)) return;
     ready[player] = true;
-    // check if every players is ready
+    tryToAdvance();
+  }
+
+  // Check if every players is ready and advance the phase.
+  void tryToAdvance() {
     if (ready.every((b) => b)) {
       switch (phase) {
         case GamePhase.Night:
@@ -85,13 +91,6 @@ class Game {
           break;
       }
     }
-  }
-  
-  // TODO Fix condition check. Add timeout limit
-  Future<void> waitForPhase(GamePhase targetPhase) async {
-    //do {
-      Future.delayed(Duration(seconds: 1));
-    //} while (phase != targetPhase);
   }
   
   // Night phase: wake up players in order of their characters.

@@ -59,59 +59,68 @@ class WerewolfService extends WerewolfServiceBase {
   }
 
   Future<Effect> act(grpc.ServiceCall call, Action request) async {
-    if (game.phase != GamePhase.Night) {
-      print('ERROR: Cannot act in ${game.phase}');
-      return new Effect()..status = Status.ERROR;
-    }
-    
     int player = request.player; 
+    Effect effect = new Effect();
+    
     if (!game.validPlayer(player)) {
-      return new Effect()..status = Status.INVALID;
+      return effect..status = Status.INVALID;
     }
     
-    // record the player's chosen targets
-    game.targetSets[player] = request.targets;
-    // mark player as ready 
-    game.setReady(player);
+    if (game.phase == GamePhase.Night && !game.ready[player]) {
+      if (request.targets.every(game.validPlayer)) {
+        // record the player's chosen targets
+        game.targetSets[player] = request.targets;
+        // mark player as ready 
+        game.setReady(player);
+        // wait to allow game phase to change
+        await Future.delayed(Duration(seconds: 1));
+      } else {
+        return effect..status = Status.INVALID;
+      }
+    }
 
-    // wait until game deems night phase is complete
-    await game.waitForPhase(GamePhase.Day);
-    
-    Effect effect = new Effect();
-    List revelations = game.revelationSets[player];
-    for (var i in revelations) {
-      effect.revelations.add(
-        new Effect_Revelation()
-          ..player = i
-          ..role = mapCharacterToRole(game.finals.character(i))
-      );
+    if (game.phase == GamePhase.Night) {
+      print('INFO: Instructing player ${player} to Wait for game phase to change to Day');
+      effect.status = Status.WAIT;
+    } else {
+      List revelations = game.revelationSets[player];
+      for (var i in revelations) {
+        effect.revelations.add(
+          new Effect_Revelation()
+            ..player = i
+            ..role = mapCharacterToRole(game.finals.character(i))
+        );
+      }
     }
     
     return effect;
   }
   
   Future<Verdict> vote(grpc.ServiceCall call, Ballot request) async {
-    if (game.phase != GamePhase.Day) {
-      print('ERROR: Cannot vote in ${game.phase}');
-      return new Verdict()..status = Status.ERROR;
-    }
-    
     Verdict verdict = new Verdict(); 
+    int player = request.player;
   
-    if (!game.castVote(request.player, request.target)) {
-      verdict.status = Status.INVALID;
+    if (game.phase == GamePhase.Day && !game.ready[player]) {
+      if (game.castVote(player, request.target)) {
+        // mark player as ready 
+        game.setReady(player);
+        // wait to allow game phase to change
+        await Future.delayed(Duration(seconds: 1));
+      } else {
+        return verdict..status = Status.INVALID;
+      }
     }
-    // mark player as ready 
-    game.setReady(request.player);
     
-    // wait until game deems day phase is complete
-    await game.waitForPhase(GamePhase.Finale);
-    
-    verdict
-      ..votes.addAll(game.votes)
-      ..winners.addAll(game.winners)
-      ..deads.addAll(game.deads)
-      ..roles.addAll( game.finals.characters.map(mapCharacterToRole) );
+    if (game.phase == GamePhase.Day) {
+      print('INFO: Instructing player ${player} for game phase to change to Finale');
+      return verdict..status = Status.WAIT;
+    } else {
+      verdict
+        ..votes.addAll(game.votes)
+        ..winners.addAll(game.winners)
+        ..deads.addAll(game.deads)
+        ..roles.addAll( game.finals.characters.map(mapCharacterToRole) );
+    }
     
     return verdict;
   }

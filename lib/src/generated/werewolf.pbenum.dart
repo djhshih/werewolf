@@ -50,11 +50,13 @@ class Role extends $pb.ProtobufEnum {
 
 class Status extends $pb.ProtobufEnum {
   static const Status OK = const Status._(0, 'OK');
-  static const Status INVALID = const Status._(1, 'INVALID');
-  static const Status ERROR = const Status._(2, 'ERROR');
+  static const Status WAIT = const Status._(1, 'WAIT');
+  static const Status INVALID = const Status._(2, 'INVALID');
+  static const Status ERROR = const Status._(3, 'ERROR');
 
   static const List<Status> values = const <Status> [
     OK,
+    WAIT,
     INVALID,
     ERROR,
   ];

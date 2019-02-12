@@ -27,8 +27,9 @@ const Status$json = const {
   '1': 'Status',
   '2': const [
     const {'1': 'OK', '2': 0},
-    const {'1': 'INVALID', '2': 1},
-    const {'1': 'ERROR', '2': 2},
+    const {'1': 'WAIT', '2': 1},
+    const {'1': 'INVALID', '2': 2},
+    const {'1': 'ERROR', '2': 3},
   ],
 };
 

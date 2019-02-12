@@ -10,6 +10,14 @@ class Client {
   WerewolfClient stub;
 
   Future<void> main(List<String> args) async {
+    // TODO Generalize player id;
+    if (args.length < 1) {
+      print('usage: client <player-id>');
+      return;
+    }
+    
+    int player = int.parse(args[0]);
+    
     channel = new ClientChannel('127.0.0.1',
       port: 8888,
       options: const ChannelOptions(
@@ -21,28 +29,50 @@ class Client {
       options: new CallOptions(timeout: new Duration(seconds: 30))
     );
     
-    // TODO Generalize player id;
-    int player = 0;
-    
-    stdout.write('Targets: ');
-    var input = stdin.readLineSync();
-    var targets = input.split(' ').map(int.parse);
-    Action action = new Action()
-      ..player = player
-      ..targets.addAll(targets);
-    print('Action: ${action}');
-    Effect effect = await stub.act(action);
+    Effect effect;
+    do {
+      stdout.write('Targets: ');
+      var input = stdin.readLineSync();
+      var targets;
+      if (input.isNotEmpty) {
+        targets = input.split(' ').map(int.parse);
+      } else {
+        targets = <int>[];
+      }
+      Action action = new Action()
+        ..player = player
+        ..targets.addAll(targets);
+      print('Action: ${action}');
+      
+      effect = await stub.act(action);
+      while (effect.status == Status.WAIT) {
+        effect = await Future.delayed(Duration(seconds: 1), () => stub.act(action));
+      }
+    } while (effect.status == Status.INVALID);
     
     print('Status: ${effect.status}');
     print('Relevations: ${effect.revelations}');
     
-    stdout.write('Vote: ');
-    int target = int.parse(stdin.readLineSync());
-    Ballot ballot = new Ballot()
-      ..player = player
-      ..target = target;
+    Verdict verdict;
+    do {
+
+      int target = -1;
+      do {
+        stdout.write('Vote: ');
+        try {
+          target = int.parse(stdin.readLineSync());
+        } catch (_) {}
+      } while (target < 0);
       
-    Verdict verdict = await stub.vote(ballot);
+      Ballot ballot = new Ballot()
+        ..player = player
+        ..target = target;
+        
+      verdict = await stub.vote(ballot);
+      while (verdict.status == Status.WAIT) {
+        verdict = await Future.delayed(Duration(seconds: 1), () => stub.vote(ballot));
+      }
+    } while (verdict.status == Status.INVALID);
     
     print('Status: ${verdict.status}');
     print('Votes: ${verdict.votes}');

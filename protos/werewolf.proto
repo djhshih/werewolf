@@ -26,8 +26,9 @@ enum Role {
 
 enum Status {
     OK = 0;
-    INVALID = 1;
-    ERROR = 2;
+    WAIT = 1;
+    INVALID = 2;
+    ERROR = 3;
 }
 
 message Slot {
