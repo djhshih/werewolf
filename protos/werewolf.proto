@@ -33,11 +33,13 @@ enum Status {
 
 message Slot {
     uint32 player = 1;
+    uint32 key = 2;
 }
 
 message Action {
     uint32 player = 1;
-    repeated uint32 targets = 2;
+    uint32 key = 2;
+    repeated uint32 targets = 3;
 }
 
 message Effect {
@@ -51,7 +53,8 @@ message Effect {
 
 message Ballot {
     uint32 player = 1;
-    uint32 target = 2;
+    uint32 key = 2;
+    uint32 target = 3;
 }
 
 message Verdict {

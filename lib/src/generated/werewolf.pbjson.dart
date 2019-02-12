@@ -37,6 +37,7 @@ const Slot$json = const {
   '1': 'Slot',
   '2': const [
     const {'1': 'player', '3': 1, '4': 1, '5': 13, '10': 'player'},
+    const {'1': 'key', '3': 2, '4': 1, '5': 13, '10': 'key'},
   ],
 };
 
@@ -44,7 +45,8 @@ const Action$json = const {
   '1': 'Action',
   '2': const [
     const {'1': 'player', '3': 1, '4': 1, '5': 13, '10': 'player'},
-    const {'1': 'targets', '3': 2, '4': 3, '5': 13, '10': 'targets'},
+    const {'1': 'key', '3': 2, '4': 1, '5': 13, '10': 'key'},
+    const {'1': 'targets', '3': 3, '4': 3, '5': 13, '10': 'targets'},
   ],
 };
 
@@ -69,7 +71,8 @@ const Ballot$json = const {
   '1': 'Ballot',
   '2': const [
     const {'1': 'player', '3': 1, '4': 1, '5': 13, '10': 'player'},
-    const {'1': 'target', '3': 2, '4': 1, '5': 13, '10': 'target'},
+    const {'1': 'key', '3': 2, '4': 1, '5': 13, '10': 'key'},
+    const {'1': 'target', '3': 3, '4': 1, '5': 13, '10': 'target'},
   ],
 };
 

@@ -39,10 +39,6 @@ class Game {
     targetSets = new List.filled(nPlayers, []);
     revelationSets = new List.filled(nPlayers, []);
     playables = new List.filled(nPlayers, false);
-    // TODO Make this more general. Only first player is playable for now.
-    playables[0] = true;
-    playables[1] = true;
-    print('INFO: playables: $playables');
     
     resetReady();
     
@@ -90,6 +86,8 @@ class Game {
         default:
           break;
       }
+    } else {
+      print('DEBUG: ready: ${ready}');
     }
   }
   

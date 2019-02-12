@@ -15,6 +15,8 @@ class WerewolfService extends WerewolfServiceBase {
   
   WerewolfService(this.cards);
   
+  Map<int, int> keys = {};
+  
   void init() {
     Random r = new Random();
     game = new Game(new Characters(11, cards));
@@ -53,9 +55,45 @@ class WerewolfService extends WerewolfServiceBase {
     return Role.UNKNOWN;
   }
 
-  // TODO Implement server register
   Future<Slot> register(grpc.ServiceCall call, Slot request) async {
-    return request;
+    // Assign a secret key that the requester needs to subsequent interactions
+    Slot response = new Slot();
+    print('DEBUG: playables: ${game.playables}');
+    if (request.key == 0) {
+      // Assign player to next available id
+      for (int i = 0; i < game.playables.length; i++) {
+        if (!game.playables[i]) {
+          print('DEBUG: Found available player slot: $i');
+          // register player
+          response.player = i;
+          game.playables[i] = true;
+          game.ready[i] = false;
+          // register key
+          Random r = new Random();
+          // key value of 0 is reserved
+          response.key = r.nextInt((1 << 32) - 1) + 1;
+          keys[i] = response.key;
+          print(' INFO: Player ${response.player} joins the game.');
+          break;
+        }
+      }
+      if (response.key == 0) {
+        // no player slot available
+        print(' INFO: Game is full. New player could not join.');
+      }
+    } else {
+      // check if key matches
+      int player = request.player;
+      if (keys.containsKey(player) && keys[player] == request.key) {
+        // re-register player
+        game.playables[player] = true;
+        game.ready[player] = false;
+        response = request;
+        print(' INFO: Player ${response.player} re-joins the game.');
+      }
+    }
+    print('DEBUG: game.ready: ${game.ready}');
+    return response;
   }
 
   Future<Effect> act(grpc.ServiceCall call, Action request) async {
@@ -80,7 +118,7 @@ class WerewolfService extends WerewolfServiceBase {
     }
 
     if (game.phase == GamePhase.Night) {
-      print('INFO: Instructing player ${player} to Wait for game phase to change to Day');
+      print(' INFO: Instructing player ${player} to Wait for game phase to change to Day');
       effect.status = Status.WAIT;
     } else {
       List revelations = game.revelationSets[player];
@@ -112,7 +150,7 @@ class WerewolfService extends WerewolfServiceBase {
     }
     
     if (game.phase == GamePhase.Day) {
-      print('INFO: Instructing player ${player} for game phase to change to Finale');
+      print(' INFO: Instructing player ${player} for game phase to change to Finale');
       return verdict..status = Status.WAIT;
     } else {
       verdict

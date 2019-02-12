@@ -16,6 +16,7 @@ export 'werewolf.pbenum.dart';
 class Slot extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = new $pb.BuilderInfo('Slot', package: const $pb.PackageName('werewolf'))
     ..a<int>(1, 'player', $pb.PbFieldType.OU3)
+    ..a<int>(2, 'key', $pb.PbFieldType.OU3)
     ..hasRequiredFields = false
   ;
 
@@ -38,12 +39,18 @@ class Slot extends $pb.GeneratedMessage {
   set player(int v) { $_setUnsignedInt32(0, v); }
   bool hasPlayer() => $_has(0);
   void clearPlayer() => clearField(1);
+
+  int get key => $_get(1, 0);
+  set key(int v) { $_setUnsignedInt32(1, v); }
+  bool hasKey() => $_has(1);
+  void clearKey() => clearField(2);
 }
 
 class Action extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = new $pb.BuilderInfo('Action', package: const $pb.PackageName('werewolf'))
     ..a<int>(1, 'player', $pb.PbFieldType.OU3)
-    ..p<int>(2, 'targets', $pb.PbFieldType.PU3)
+    ..a<int>(2, 'key', $pb.PbFieldType.OU3)
+    ..p<int>(3, 'targets', $pb.PbFieldType.PU3)
     ..hasRequiredFields = false
   ;
 
@@ -67,7 +74,12 @@ class Action extends $pb.GeneratedMessage {
   bool hasPlayer() => $_has(0);
   void clearPlayer() => clearField(1);
 
-  List<int> get targets => $_getList(1);
+  int get key => $_get(1, 0);
+  set key(int v) { $_setUnsignedInt32(1, v); }
+  bool hasKey() => $_has(1);
+  void clearKey() => clearField(2);
+
+  List<int> get targets => $_getList(2);
 }
 
 class Effect_Revelation extends $pb.GeneratedMessage {
@@ -136,7 +148,8 @@ class Effect extends $pb.GeneratedMessage {
 class Ballot extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = new $pb.BuilderInfo('Ballot', package: const $pb.PackageName('werewolf'))
     ..a<int>(1, 'player', $pb.PbFieldType.OU3)
-    ..a<int>(2, 'target', $pb.PbFieldType.OU3)
+    ..a<int>(2, 'key', $pb.PbFieldType.OU3)
+    ..a<int>(3, 'target', $pb.PbFieldType.OU3)
     ..hasRequiredFields = false
   ;
 
@@ -160,10 +173,15 @@ class Ballot extends $pb.GeneratedMessage {
   bool hasPlayer() => $_has(0);
   void clearPlayer() => clearField(1);
 
-  int get target => $_get(1, 0);
-  set target(int v) { $_setUnsignedInt32(1, v); }
-  bool hasTarget() => $_has(1);
-  void clearTarget() => clearField(2);
+  int get key => $_get(1, 0);
+  set key(int v) { $_setUnsignedInt32(1, v); }
+  bool hasKey() => $_has(1);
+  void clearKey() => clearField(2);
+
+  int get target => $_get(2, 0);
+  set target(int v) { $_setUnsignedInt32(2, v); }
+  bool hasTarget() => $_has(2);
+  void clearTarget() => clearField(3);
 }
 
 class Verdict extends $pb.GeneratedMessage {

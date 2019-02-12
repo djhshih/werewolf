@@ -10,13 +10,6 @@ class Client {
   WerewolfClient stub;
 
   Future<void> main(List<String> args) async {
-    if (args.length < 1) {
-      print('usage: client <player-id>');
-      return;
-    }
-    
-    int player = int.parse(args[0]);
-    
     channel = new ClientChannel('127.0.0.1',
       port: 8888,
       options: const ChannelOptions(
@@ -27,6 +20,11 @@ class Client {
     stub = new WerewolfClient(channel,
       options: new CallOptions(timeout: new Duration(seconds: 30))
     );
+    
+    Slot request = new Slot();
+    Slot slot = await stub.register(request);
+    int player = slot.player;
+    print('INFO: Server assigned player id ${player}');
     
     Effect effect;
     do {
