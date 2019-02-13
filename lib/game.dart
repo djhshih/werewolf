@@ -32,8 +32,15 @@ class Game {
     int nPlayers = originals.nPlayers;
     
     targetSets = new List.filled(nPlayers, []);
-    revelationSets = new List.filled(nPlayers, []);
     votes = new List.filled(nPlayers, -1);
+    
+    // This will assign sae list to each element!
+    //     revelationSets = new List.filled(nPlayers, []);
+    // Therefore, do explicit loop
+    revelationSets = new List(nPlayers);
+    for (int i = 0; i < nPlayers; i++) {
+      revelationSets[i] = [];
+    }
     
     phase = GamePhase.Night;
   }
@@ -84,6 +91,8 @@ class Game {
     originals.wake(new Troublemaker(), finals, targetSets, revelationSets);
     originals.wake(new Drunk(), finals, targetSets, revelationSets);
     originals.wake(new Insomniac(), finals, targetSets, revelationSets);
+    
+    print('DEBUG: revelationSets: ${revelationSets}');
     
     phase = GamePhase.Day;
   }
