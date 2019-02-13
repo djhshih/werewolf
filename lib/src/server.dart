@@ -167,6 +167,7 @@ class WerewolfService extends WerewolfServiceBase {
       effect.status = Status.WAIT;
     } else {
       List revelations = game.revelationSets[player];
+      print('DEBUG: revelations: ${revelations}');
       for (var i in revelations) {
         effect.revelations.add(
           new Effect_Revelation()

@@ -69,21 +69,21 @@ class Game {
   
   // Night phase: wake up players in order of their characters.
   void night() {
-    originals.wake(new Doppelganger(), originals, targetSets);
+    originals.wake(new Doppelganger(), originals, targetSets, revelationSets);
     
     // create a new copy of the characters to avoid characters'
     // actions to interfere during the night phase
     List<Character> finalCharacters = List.from(originals.characters);
     finals = new Characters(originals.nPlayers, finalCharacters);
     
-    originals.wake(new Werewolf(), finals, targetSets);
-    originals.wake(new Minion(), finals, targetSets);
-    originals.wake(new Mason(), finals, targetSets);
-    originals.wake(new Seer(), finals, targetSets);
-    originals.wake(new Robber(), finals, targetSets);
-    originals.wake(new Troublemaker(), finals, targetSets);
-    originals.wake(new Drunk(), finals, targetSets);
-    originals.wake(new Insomniac(), finals, targetSets);
+    originals.wake(new Werewolf(), finals, targetSets, revelationSets);
+    originals.wake(new Minion(), finals, targetSets, revelationSets);
+    originals.wake(new Mason(), finals, targetSets, revelationSets);
+    originals.wake(new Seer(), finals, targetSets, revelationSets);
+    originals.wake(new Robber(), finals, targetSets, revelationSets);
+    originals.wake(new Troublemaker(), finals, targetSets, revelationSets);
+    originals.wake(new Drunk(), finals, targetSets, revelationSets);
+    originals.wake(new Insomniac(), finals, targetSets, revelationSets);
     
     phase = GamePhase.Day;
   }

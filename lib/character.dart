@@ -37,11 +37,11 @@ class Character {
   int index;
   Team team = Team.Independent;
   
-  void act(List<int> targets, Characters cs) {
+  void act(List<int> targets, Characters cs, List<int> revelations) {
     return;
   }
   
-  void actRandomly(Characters cs) => act([], cs);
+  void actRandomly(Characters cs, List<int> revelations) => act([], cs, revelations);
   
   Character make() => new Character();
 }
@@ -57,8 +57,10 @@ class Villager extends Character {
 class Werewolf extends Character {
   Team team = Team.Werewolf;
   
-  void act(List<int> targets, Characters cs) {
+  void act(List<int> targets, Characters cs, List<int> revelations) {
     List<int> xs = cs.find(this);
+    revelations.addAll(xs);
+    
     print('DEBUG: Player $index (${this}) sees other werewolfs.');
     print(' INFO: Player $index sees players $xs awake.');
   }
@@ -69,16 +71,17 @@ class Werewolf extends Character {
 class Seer extends Character {
   Team team = Team.Villager;
   
-  void act(List<int> targets, Characters cs) {
-    int i = targets[0];
+  void act(List<int> targets, Characters cs, List<int> revelations) {
+    revelations.addAll(targets);
 
     print('DEUBG: Player $index (${this}) sees two unclaimed cards OR another player\'s card.');
-    print('DEUBG: Player $index (${this}) sees another player\'s card ($i).');
-    print(' INFO: Player $index sees ${cs.character(i)}.');
+    for (int i in targets) {
+      print(' INFO: Player $index sees ${cs.character(i)}.');
+    }
   }
   
-  void actRandomly(Characters cs) {
-    act([chooseOtherPlayer(cs, index)], cs);  
+  void actRandomly(Characters cs, List<int> revelations) {
+    act([chooseOtherPlayer(cs, index)], cs, revelations);  
   }
    
   Seer make() => new Seer();
@@ -87,16 +90,17 @@ class Seer extends Character {
 class Robber extends Character {
   Team team = Team.Villager;
   
-  void act(List<int> targets, Characters cs) {
+  void act(List<int> targets, Characters cs, List<int> revelations) {
     int i = targets[0];
     cs.swap(index, i);
+    revelations.add(index);
     
     print('DEBUG: Player $index (${this}) swaps cards with another player ($i)');
     print(' INFO: Player $index sees ${cs.character(index)}.');
   }
   
-  void actRandomly(Characters cs) {
-    act([chooseOtherPlayer(cs, index)], cs);  
+  void actRandomly(Characters cs, List<int> revelations) {
+    act([chooseOtherPlayer(cs, index)], cs, revelations);
   }
   
   Robber make() => new Robber();
@@ -105,14 +109,14 @@ class Robber extends Character {
 class Troublemaker extends Character {
   Team team = Team.Villager;
   
-  void act(List<int> targets, Characters cs) {
+  void act(List<int> targets, Characters cs, List<int> revelations) {
     cs.swap(targets[0], targets[1]);
     
     print('DEBUG: Player $index (${this}) swaps two other players\' cards (${targets[0]}, ${targets[1]}).');
   }
 
-  void actRandomly(Characters cs) {
-    act(chooseTwoOtherPlayers(cs, index), cs);  
+  void actRandomly(Characters cs, List<int> revelations) {
+    act(chooseTwoOtherPlayers(cs, index), cs, revelations);  
   }
   
   Troublemaker make() => new Troublemaker();
@@ -125,15 +129,15 @@ class Tanner extends Character {
 class Drunk extends Character {
   Team team = Team.Villager;
   
-  void act(List<int> targets, Characters cs) {
+  void act(List<int> targets, Characters cs, List<int> revelations) {
     int i = targets[0];
     cs.swap(index, i);
     
     print('DEBUG: Player $index (${this}) swaps own card with an unclaimed card ($i).');
   } 
   
-  void actRandomly(Characters cs) {
-    act([chooseUnclaimed(cs)], cs);  
+  void actRandomly(Characters cs, List<int> revelations) {
+    act([chooseUnclaimed(cs)], cs, revelations);  
   }
   
   Drunk make() => new Drunk();
@@ -148,8 +152,10 @@ class Hunter extends Character {
 class Mason extends Character {
   Team team = Team.Villager;
   
-  void act(List<int> targets, Characters cs) {
+  void act(List<int> targets, Characters cs, List<int> revelations) {
     List<int> xs = cs.find(this);
+    revelations.addAll(xs);
+    
     print('DEBUG: Player $index (${this}) sees other masons.');
     print(' INFO: Player $index sees players $xs awake.');
   } 
@@ -160,7 +166,9 @@ class Mason extends Character {
 class Insomniac extends Character {
   Team team = Team.Villager;
   
-  void act(List<int> targets, Characters cs) {
+  void act(List<int> targets, Characters cs, List<int> revelations) {
+    revelations.add(index);
+    
     print('DEBUG: Player $index (${this}) sees own card.');
     print(' INFO: Player $index sees ${cs.character(index)}.');
   } 
@@ -171,8 +179,10 @@ class Insomniac extends Character {
 class Minion extends Character {
   Team team = Team.Werewolf;
   
-  void act(List<int> targets, Characters cs) {
+  void act(List<int> targets, Characters cs, List<int> revelations) {
     List<int> xs = cs.find(new Werewolf());
+    revelations.addAll(xs);
+
     print('DEBUG: Player $index (${this}) sees the werewolves.');
     print(' INFO: Player $index sees that players $xs are werewolves.');
   } 
@@ -183,18 +193,19 @@ class Minion extends Character {
 class Doppelganger extends Character {
   // NB  To allow Doppelganger to take the action of the new role,
   //     this function needs to modify the original list!
-  void act(List<int> targets, Characters cs) {
+  void act(List<int> targets, Characters cs, List<int> revelations) {
     int i = targets[0];
     Character c = cs.character(i).make();
     c.index = index;
     cs.characters[index] = c;
+    revelations.add(index);
     
     print('DEBUG: Player $index (${this}) clones player\'s card ($i).');
     print(' INFO: Player $index becomes ${cs.character(index)}.');
   } 
   
-  void actRandomly(Characters cs) {
-    act([chooseOtherPlayer(cs, index)], cs);  
+  void actRandomly(Characters cs, List<int> revelations) {
+    act([chooseOtherPlayer(cs, index)], cs, revelations);
   }
   
   Doppelganger make() => new Doppelganger();
@@ -239,14 +250,14 @@ class Characters {
 
   // Wake up players with a matching character and
   // allow them to perform their actions
-  void wake(Character m, Characters cs, List<List<int>> targetSets) {
+  void wake(Character m, Characters cs, List<List<int>> targetSets, List<List<int>> revelationSets) {
     for (int i = 0; i < nPlayers; i++) {
       Character x = characters[i];
       if (x.runtimeType == m.runtimeType) {
         if (targetSets[i].isNotEmpty) {
-          x.act(targetSets[i], cs);
+          x.act(targetSets[i], cs, revelationSets[i]);
         } else {
-          x.actRandomly(cs);
+          x.actRandomly(cs, revelationSets[i]);
         }
       }
     }
