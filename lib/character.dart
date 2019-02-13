@@ -62,7 +62,6 @@ class Werewolf extends Character {
     print('DEBUG: Player $index (${this}) sees other werewolfs.');
     print(' INFO: Player $index sees players $xs awake.');
   }
-  
 
   Werewolf make() => new Werewolf();
 }

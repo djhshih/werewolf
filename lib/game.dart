@@ -110,7 +110,7 @@ class Game {
     originals.wake(new Insomniac(), finals, targetSets);
   }
   
-  // Day phase; vote, lynch and judge.
+  // Day phase: vote, lynch and judge.
   void day() {
     vote();
     lynch();
