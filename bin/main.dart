@@ -21,9 +21,8 @@ main(List<String> arguments) {
     new Doppelganger(),
   ];
 
-  Random r = new Random();
-  Game game = new Game(new Characters(11, cards));
-  game.init(r);
+  Game game = new Game(new Characters(11, cards), new Random());
+  game.init();
   game.reveal(game.originals);
   game.night();
   game.reveal(game.finals);

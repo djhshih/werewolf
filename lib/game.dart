@@ -10,45 +10,32 @@ class Game {
   Characters originals;
   Characters finals;
   
+  Random random;
+  
   // each player's targets
   List<List<int>> targetSets;
   
   // each player's revelations
   List<List<int>> revelationSets;
 
-  // each player's status
-  List<bool> playables;
-
-  List<bool> ready;
-  List<int> votes;
-  
   GamePhase phase = GamePhase.Initial;
   
+  List<int> votes;
   List<int> deads;
   List<int> winners;
   
-  Game(this.originals);
+  Game(this.originals, this.random);
   
-  void init(Random r) {
-    originals.shuffle(r);
+  void init() {
+    originals.shuffle(random);
     
     int nPlayers = originals.nPlayers;
     
     targetSets = new List.filled(nPlayers, []);
     revelationSets = new List.filled(nPlayers, []);
-    playables = new List.filled(nPlayers, false);
-    
-    resetReady();
-    
     votes = new List.filled(nPlayers, -1);
     
     phase = GamePhase.Night;
-  }
-  
-  // Reset ready statuses of players.
-  void resetReady() {
-    // non-playable characters are ready by default
-    ready = playables.map((playable) => !playable).toList();
   }
   
   bool validPlayer(int player) =>
@@ -62,32 +49,21 @@ class Game {
     return false;
   }
   
-  // Set player as ready.
-  void setReady(int player) {
-    if (!validPlayer(player)) return;
-    ready[player] = true;
-    tryToAdvance();
-  }
 
-  // Check if every players is ready and advance the phase.
-  void tryToAdvance() {
-    if (ready.every((b) => b)) {
-      switch (phase) {
-        case GamePhase.Night:
-          night();
-          phase = GamePhase.Day;
-          resetReady();
-          break;
-        case GamePhase.Day:
-          day();
-          phase = GamePhase.Finale;
-          resetReady();
-          break;
-        default:
-          break;
-      }
-    } else {
-      print('DEBUG: ready: ${ready}');
+  // Advance the phase.
+  void advance() {
+    switch (phase) {
+      case GamePhase.Initial:
+        init();
+        break;
+      case GamePhase.Night:
+        night();
+        break;
+      case GamePhase.Day:
+        day();
+        break;
+      default:
+        break;
     }
   }
   
@@ -108,6 +84,8 @@ class Game {
     originals.wake(new Troublemaker(), finals, targetSets);
     originals.wake(new Drunk(), finals, targetSets);
     originals.wake(new Insomniac(), finals, targetSets);
+    
+    phase = GamePhase.Day;
   }
   
   // Day phase: vote, lynch and judge.
@@ -115,6 +93,8 @@ class Game {
     vote();
     lynch();
     judge();
+
+    phase = GamePhase.Finale;
   }
   
   // Reveal the characters.
@@ -148,6 +128,7 @@ class Game {
   void lynch() {
     final cs = finals; 
     int n = votes.length;
+    deads = new List();
     
     // count the votes
     List<int> counts = new List.filled(n, 0); 
@@ -158,8 +139,6 @@ class Game {
     print('DEBUG: Votes $counts');
     
     int maxCount = counts.reduce(max);
-    
-    deads = new List();
     
     const int minVotes = 2;
     // find all players with highest vote and at least two votes

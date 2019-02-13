@@ -15,13 +15,40 @@ class WerewolfService extends WerewolfServiceBase {
   
   WerewolfService(this.cards);
   
+  // each playable character's secret key (for identity verification)
   Map<int, int> keys = {};
   
+  // whether each character is a playable character or non-playable character
+  List<bool> playables;
+
+  // each player's ready status;
+  List<bool> ready;
+  
   void init() {
-    Random r = new Random();
-    game = new Game(new Characters(11, cards));
-    game.init(r);
+    game = new Game(new Characters(11, cards), new Random());
+    game.init();
     game.reveal(game.originals);
+    
+    playables = new List.filled(game.originals.nPlayers, false);
+    resetReady();
+  }
+  
+    // Reset ready statuses of players.
+  void resetReady() {
+    // non-playable characters are ready by default
+    ready = playables.map((playable) => !playable).toList();
+  }
+  
+  // Set player as ready and advance if everyone is ready.
+  void setReady(int player) {
+    if (!game.validPlayer(player)) return;
+    ready[player] = true;
+    if (ready.every((b) => b)) {
+      game.advance();
+      resetReady();
+    } else {
+      print('DEBUG: ready: ${ready}');
+    }
   }
   
   // TODO Fix this ugly switch
@@ -63,16 +90,15 @@ class WerewolfService extends WerewolfServiceBase {
     }
   
     // Assign a secret key that the requester needs to subsequent interactions
-    print('DEBUG: playables: ${game.playables}');
     if (request.key == 0) {
       // Assign player to next available id
-      for (int i = 0; i < game.playables.length; i++) {
-        if (!game.playables[i]) {
+      for (int i = 0; i < playables.length; i++) {
+        if (!playables[i]) {
           print('DEBUG: Found available player slot: $i');
           // register player
           response.player = i;
-          game.playables[i] = true;
-          game.ready[i] = false;
+          playables[i] = true;
+          ready[i] = false;
           // register key
           Random r = new Random();
           // key value of 0 is reserved
@@ -92,8 +118,8 @@ class WerewolfService extends WerewolfServiceBase {
       int key = request.key;
       if (checkKey(player, key)) {
         // re-register player
-        game.playables[player] = true;
-        game.ready[player] = false;
+        playables[player] = true;
+        ready[player] = false;
         response.player = player;
         response.key = key;
         print(' INFO: Player ${response.player} re-joins the game.');
@@ -101,7 +127,6 @@ class WerewolfService extends WerewolfServiceBase {
         return response..status = Status.INVALID;
       }
     }
-    print('DEBUG: game.ready: ${game.ready}');
     
     response.role = mapCharacterToRole(game.originals.character(response.player));
     
@@ -124,12 +149,12 @@ class WerewolfService extends WerewolfServiceBase {
       return effect..status = Status.ERROR;
     }
     
-    if (game.phase == GamePhase.Night && !game.ready[player]) {
+    if (game.phase == GamePhase.Night && !ready[player]) {
       if (request.targets.every(game.validPlayer)) {
         // record the player's chosen targets
         game.targetSets[player] = request.targets;
         // mark player as ready 
-        game.setReady(player);
+        setReady(player);
         // wait to allow game phase to change
         await Future.delayed(Duration(seconds: 1));
       } else {
@@ -166,10 +191,10 @@ class WerewolfService extends WerewolfServiceBase {
       return verdict..status = Status.ERROR;
     }
   
-    if (game.phase == GamePhase.Day && !game.ready[player]) {
+    if (game.phase == GamePhase.Day && !ready[player]) {
       if (game.castVote(player, request.target)) {
         // mark player as ready 
-        game.setReady(player);
+        setReady(player);
         // wait to allow game phase to change
         await Future.delayed(Duration(seconds: 1));
       } else {
