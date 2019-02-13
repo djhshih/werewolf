@@ -21,7 +21,12 @@ class Client {
       options: new CallOptions(timeout: new Duration(seconds: 30))
     );
     
-    Slot slot = await stub.register(new Identification());
+    Identification id = new Identification();
+    Slot slot = await stub.register(id);
+    while (slot.status == Status.WAIT) {
+      slot = await Future.delayed(Duration(seconds: 1), () => stub.register(id));
+    }
+
     int player = slot.player;
     int key = slot.key;
     print('INFO: Server assigned player id ${player} and card ${slot.role}');
