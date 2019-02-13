@@ -80,6 +80,7 @@ class Seer extends Character {
     }
   }
   
+  // TODO Allow Seer to randomly choose two unclaimed cards.
   void actRandomly(Characters cs, List<int> revelations) {
     act([chooseOtherPlayer(cs, index)], cs, revelations);  
   }
