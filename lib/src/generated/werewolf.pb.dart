@@ -13,10 +13,45 @@ import 'werewolf.pbenum.dart';
 
 export 'werewolf.pbenum.dart';
 
-class Slot extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = new $pb.BuilderInfo('Slot', package: const $pb.PackageName('werewolf'))
+class Identification extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = new $pb.BuilderInfo('Identification', package: const $pb.PackageName('werewolf'))
     ..a<int>(1, 'player', $pb.PbFieldType.OU3)
     ..a<int>(2, 'key', $pb.PbFieldType.OU3)
+    ..hasRequiredFields = false
+  ;
+
+  Identification() : super();
+  Identification.fromBuffer(List<int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) : super.fromBuffer(i, r);
+  Identification.fromJson(String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) : super.fromJson(i, r);
+  Identification clone() => new Identification()..mergeFromMessage(this);
+  Identification copyWith(void Function(Identification) updates) => super.copyWith((message) => updates(message as Identification));
+  $pb.BuilderInfo get info_ => _i;
+  static Identification create() => new Identification();
+  Identification createEmptyInstance() => create();
+  static $pb.PbList<Identification> createRepeated() => new $pb.PbList<Identification>();
+  static Identification getDefault() => _defaultInstance ??= create()..freeze();
+  static Identification _defaultInstance;
+  static void $checkItem(Identification v) {
+    if (v is! Identification) $pb.checkItemFailed(v, _i.qualifiedMessageName);
+  }
+
+  int get player => $_get(0, 0);
+  set player(int v) { $_setUnsignedInt32(0, v); }
+  bool hasPlayer() => $_has(0);
+  void clearPlayer() => clearField(1);
+
+  int get key => $_get(1, 0);
+  set key(int v) { $_setUnsignedInt32(1, v); }
+  bool hasKey() => $_has(1);
+  void clearKey() => clearField(2);
+}
+
+class Slot extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = new $pb.BuilderInfo('Slot', package: const $pb.PackageName('werewolf'))
+    ..e<Status>(1, 'status', $pb.PbFieldType.OE, Status.OK, Status.valueOf, Status.values)
+    ..a<int>(2, 'player', $pb.PbFieldType.OU3)
+    ..a<int>(3, 'key', $pb.PbFieldType.OU3)
+    ..e<Role>(4, 'role', $pb.PbFieldType.OE, Role.UNKNOWN, Role.valueOf, Role.values)
     ..hasRequiredFields = false
   ;
 
@@ -35,15 +70,25 @@ class Slot extends $pb.GeneratedMessage {
     if (v is! Slot) $pb.checkItemFailed(v, _i.qualifiedMessageName);
   }
 
-  int get player => $_get(0, 0);
-  set player(int v) { $_setUnsignedInt32(0, v); }
-  bool hasPlayer() => $_has(0);
-  void clearPlayer() => clearField(1);
+  Status get status => $_getN(0);
+  set status(Status v) { setField(1, v); }
+  bool hasStatus() => $_has(0);
+  void clearStatus() => clearField(1);
 
-  int get key => $_get(1, 0);
-  set key(int v) { $_setUnsignedInt32(1, v); }
-  bool hasKey() => $_has(1);
-  void clearKey() => clearField(2);
+  int get player => $_get(1, 0);
+  set player(int v) { $_setUnsignedInt32(1, v); }
+  bool hasPlayer() => $_has(1);
+  void clearPlayer() => clearField(2);
+
+  int get key => $_get(2, 0);
+  set key(int v) { $_setUnsignedInt32(2, v); }
+  bool hasKey() => $_has(2);
+  void clearKey() => clearField(3);
+
+  Role get role => $_getN(3);
+  set role(Role v) { setField(4, v); }
+  bool hasRole() => $_has(3);
+  void clearRole() => clearField(4);
 }
 
 class Action extends $pb.GeneratedMessage {

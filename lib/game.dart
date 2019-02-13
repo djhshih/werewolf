@@ -3,7 +3,7 @@ import 'character.dart';
 import 'dart:math';
 
 enum GamePhase {
-  Night, Day, Finale
+  Initial, Night, Day, Finale
 }
 
 class Game {
@@ -22,7 +22,7 @@ class Game {
   List<bool> ready;
   List<int> votes;
   
-  GamePhase phase;
+  GamePhase phase = GamePhase.Initial;
   
   List<int> deads;
   List<int> winners;
@@ -34,8 +34,6 @@ class Game {
     
     int nPlayers = originals.nPlayers;
     
-    phase = GamePhase.Night;
-    
     targetSets = new List.filled(nPlayers, []);
     revelationSets = new List.filled(nPlayers, []);
     playables = new List.filled(nPlayers, false);
@@ -43,6 +41,8 @@ class Game {
     resetReady();
     
     votes = new List.filled(nPlayers, -1);
+    
+    phase = GamePhase.Night;
   }
   
   // Reset ready statuses of players.

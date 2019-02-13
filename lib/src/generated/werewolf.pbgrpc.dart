@@ -11,9 +11,9 @@ import 'werewolf.pb.dart';
 export 'werewolf.pb.dart';
 
 class WerewolfClient extends $grpc.Client {
-  static final _$register = new $grpc.ClientMethod<Slot, Slot>(
+  static final _$register = new $grpc.ClientMethod<Identification, Slot>(
       '/werewolf.Werewolf/Register',
-      (Slot value) => value.writeToBuffer(),
+      (Identification value) => value.writeToBuffer(),
       (List<int> value) => new Slot.fromBuffer(value));
   static final _$act = new $grpc.ClientMethod<Action, Effect>(
       '/werewolf.Werewolf/Act',
@@ -27,7 +27,7 @@ class WerewolfClient extends $grpc.Client {
   WerewolfClient($grpc.ClientChannel channel, {$grpc.CallOptions options})
       : super(channel, options: options);
 
-  $grpc.ResponseFuture<Slot> register(Slot request,
+  $grpc.ResponseFuture<Slot> register(Identification request,
       {$grpc.CallOptions options}) {
     final call = $createCall(
         _$register, new $async.Stream.fromIterable([request]),
@@ -54,12 +54,12 @@ abstract class WerewolfServiceBase extends $grpc.Service {
   String get $name => 'werewolf.Werewolf';
 
   WerewolfServiceBase() {
-    $addMethod(new $grpc.ServiceMethod<Slot, Slot>(
+    $addMethod(new $grpc.ServiceMethod<Identification, Slot>(
         'Register',
         register_Pre,
         false,
         false,
-        (List<int> value) => new Slot.fromBuffer(value),
+        (List<int> value) => new Identification.fromBuffer(value),
         (Slot value) => value.writeToBuffer()));
     $addMethod(new $grpc.ServiceMethod<Action, Effect>(
         'Act',
@@ -92,7 +92,7 @@ abstract class WerewolfServiceBase extends $grpc.Service {
     return vote(call, await request);
   }
 
-  $async.Future<Slot> register($grpc.ServiceCall call, Slot request);
+  $async.Future<Slot> register($grpc.ServiceCall call, Identification request);
   $async.Future<Effect> act($grpc.ServiceCall call, Action request);
   $async.Future<Verdict> vote($grpc.ServiceCall call, Ballot request);
 }

@@ -55,11 +55,14 @@ class WerewolfService extends WerewolfServiceBase {
     return Role.UNKNOWN;
   }
 
-  // TODO reveal to the player his/her card.
-  //      need a different return type!
-  Future<Slot> register(grpc.ServiceCall call, Slot request) async {
-    // Assign a secret key that the requester needs to subsequent interactions
+  Future<Slot> register(grpc.ServiceCall call, Identification request) async {
     Slot response = new Slot();
+    
+    if (game.phase != GamePhase.Night) {
+      return response..status = Status.WAIT;
+    }
+  
+    // Assign a secret key that the requester needs to subsequent interactions
     print('DEBUG: playables: ${game.playables}');
     if (request.key == 0) {
       // Assign player to next available id
@@ -86,15 +89,22 @@ class WerewolfService extends WerewolfServiceBase {
     } else {
       // check if key matches
       int player = request.player;
-      if (checkKey(player, request.key)) {
+      int key = request.key;
+      if (checkKey(player, key)) {
         // re-register player
         game.playables[player] = true;
         game.ready[player] = false;
-        response = request;
+        response.player = player;
+        response.key = key;
         print(' INFO: Player ${response.player} re-joins the game.');
+      } else {
+        return response..status = Status.INVALID;
       }
     }
     print('DEBUG: game.ready: ${game.ready}');
+    
+    response.role = mapCharacterToRole(game.originals.character(response.player));
+    
     return response;
   }
   

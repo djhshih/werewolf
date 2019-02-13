@@ -33,11 +33,21 @@ const Status$json = const {
   ],
 };
 
-const Slot$json = const {
-  '1': 'Slot',
+const Identification$json = const {
+  '1': 'Identification',
   '2': const [
     const {'1': 'player', '3': 1, '4': 1, '5': 13, '10': 'player'},
     const {'1': 'key', '3': 2, '4': 1, '5': 13, '10': 'key'},
+  ],
+};
+
+const Slot$json = const {
+  '1': 'Slot',
+  '2': const [
+    const {'1': 'status', '3': 1, '4': 1, '5': 14, '6': '.werewolf.Status', '10': 'status'},
+    const {'1': 'player', '3': 2, '4': 1, '5': 13, '10': 'player'},
+    const {'1': 'key', '3': 3, '4': 1, '5': 13, '10': 'key'},
+    const {'1': 'role', '3': 4, '4': 1, '5': 14, '6': '.werewolf.Role', '10': 'role'},
   ],
 };
 

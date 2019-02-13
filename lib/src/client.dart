@@ -21,10 +21,10 @@ class Client {
       options: new CallOptions(timeout: new Duration(seconds: 30))
     );
     
-    Slot slot = await stub.register(new Slot());
+    Slot slot = await stub.register(new Identification());
     int player = slot.player;
     int key = slot.key;
-    print('INFO: Server assigned player id ${player}');
+    print('INFO: Server assigned player id ${player} and card ${slot.role}');
     
     Effect effect;
     do {
