@@ -50,14 +50,16 @@ class Game {
   bool validPlayer(int player) =>
     player >= 0 && player < originals.nPlayers;
 
-  bool castVote(int player, int target) {
-    if (validPlayer(player) && validPlayer(target)) {
-      votes[player] = target;
+  bool validCard(int target) =>
+    target >= 0 && target < originals.characters.length;
+
+  bool castVote(int player, int suspect) {
+    if (validPlayer(player) && validPlayer(suspect)) {
+      votes[player] = suspect;
       return true;
     }
     return false;
   }
-  
 
   // Advance the phase.
   void advance() {
