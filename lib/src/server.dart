@@ -166,13 +166,13 @@ class WerewolfService extends WerewolfServiceBase {
       print(' INFO: Instructing player ${player} to Wait for game phase to change to Day');
       effect.status = Status.WAIT;
     } else {
-      List revelations = game.revelationSets[player];
+      var revelations = game.revelationSets[player];
       print('DEBUG: revelations: ${revelations}');
-      for (var i in revelations) {
+      for (var i in revelations.keys) {
         effect.revelations.add(
           new Effect_Revelation()
             ..player = i
-            ..role = mapCharacterToRole(game.finals.character(i))
+            ..role = mapCharacterToRole(revelations[i])
         );
       }
     }

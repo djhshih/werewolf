@@ -16,7 +16,7 @@ class Game {
   List<List<int>> targetSets;
   
   // each player's revelations
-  List<List<int>> revelationSets;
+  List<Map<int, Character>> revelationSets;
 
   GamePhase phase = GamePhase.Initial;
   
@@ -31,15 +31,17 @@ class Game {
     
     int nPlayers = originals.nPlayers;
     
+    // It is okay to assign the same empty set to all targets initially,
+    // because we will re-assign each element to a new list instead of appending to the list.
     targetSets = new List.filled(nPlayers, []);
     votes = new List.filled(nPlayers, -1);
     
-    // This will assign sae list to each element!
-    //     revelationSets = new List.filled(nPlayers, []);
+    // This will assign same list to each element!
+    //     revelationSets = new List.filled(nPlayers, {});
     // Therefore, do explicit loop
     revelationSets = new List(nPlayers);
     for (int i = 0; i < nPlayers; i++) {
-      revelationSets[i] = [];
+      revelationSets[i] = new Map();
     }
     
     phase = GamePhase.Night;
@@ -93,6 +95,7 @@ class Game {
     originals.wake(new Insomniac(), finals, targetSets, revelationSets);
     
     print('DEBUG: revelationSets: ${revelationSets}');
+    print('DEBUG: targetSets: ${targetSets}');
     
     phase = GamePhase.Day;
   }
