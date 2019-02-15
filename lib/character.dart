@@ -58,8 +58,6 @@ void addRevelations(List<int> xs, Characters cs, Map<int, Character> revelations
   }
 }
 
-// TODO Add revelations!
-
 class Werewolf extends Character {
   Team team = Team.Werewolf;
   
