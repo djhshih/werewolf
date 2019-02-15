@@ -17,11 +17,16 @@ class Game {
   
   // each player's revelations
   List<Map<int, Character>> revelationSets;
-
+  
+  // each player's vote (each represented as a player index)
+  List<int> votes;
+  
   GamePhase phase = GamePhase.Initial;
   
-  List<int> votes;
+  // index of dead players
   List<int> deads;
+  
+  // index of winners
   List<int> winners;
   
   Game(this.originals, this.random);
