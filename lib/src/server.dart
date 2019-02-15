@@ -51,37 +51,6 @@ class WerewolfService extends WerewolfServiceBase {
     }
   }
   
-  // TODO Fix this ugly switch
-  Role mapCharacterToRole(Character c) {
-    switch (c.runtimeType) {
-      case Villager:
-        return Role.VILLAGER;
-      case Werewolf:
-        return Role.WEREWOLF;
-      case Seer:
-        return Role.SEER;
-      case Robber:
-        return Role.ROBBER;
-      case Troublemaker:
-        return Role.TROUBLEMAKER;
-      case Tanner:
-        return Role.TANNER;
-      case Drunk:
-        return Role.DRUNK;
-      case Hunter:
-        return Role.HUNTER;
-      case Mason:
-        return Role.MASON;
-      case Insomniac:
-        return Role.INSOMNIAC;
-      case Minion:
-        return Role.MINION;
-      case Doppelganger:
-        return Role.DOPPELGANGER;
-    }
-    return Role.UNKNOWN;
-  }
-
   Future<Slot> register(grpc.ServiceCall call, Identification request) async {
     Slot response = new Slot();
     
@@ -128,7 +97,7 @@ class WerewolfService extends WerewolfServiceBase {
       }
     }
     
-    response.role = mapCharacterToRole(game.originals.character(response.player));
+    response.role = game.originals.character(response.player).role;
     
     return response;
   }
@@ -173,7 +142,7 @@ class WerewolfService extends WerewolfServiceBase {
         effect.revelations.add(
           new Effect_Revelation()
             ..player = i
-            ..role = mapCharacterToRole(revelations[i])
+            ..role = revelations[i].role
         );
       }
     }
@@ -212,7 +181,7 @@ class WerewolfService extends WerewolfServiceBase {
         ..votes.addAll(game.votes)
         ..winners.addAll(game.winners)
         ..deads.addAll(game.deads)
-        ..roles.addAll( game.finals.characters.map(mapCharacterToRole) );
+        ..roles.addAll( game.finals.characters.map((x) => x.role) );
     }
     
     return verdict;

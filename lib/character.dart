@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'src/generated/werewolf.pbenum.dart';
+
 int chooseRandomly(int n) {
     Random r = new Random();
     return r.nextInt(n);
@@ -54,12 +56,14 @@ class Character {
   void actRandomly(Characters cs, Map<int, Character> revelations) => act([], cs, revelations);
   
   Character make() => new Character();
+  Role get role => Role.UNKNOWN;
 }
 
 class Villager extends Character {
   Team team = Team.Villager;
   
   Villager make() => new Villager();
+  Role get role => Role.VILLAGER;
 }
 
 void addRevelations(List<int> xs, Characters cs, Map<int, Character> revelations) {
@@ -80,6 +84,7 @@ class Werewolf extends Character {
   }
 
   Werewolf make() => new Werewolf();
+  Role get role => Role.WEREWOLF;
 }
 
 class Seer extends Character {
@@ -108,6 +113,7 @@ class Seer extends Character {
   }
    
   Seer make() => new Seer();
+  Role get role => Role.SEER;
 }
 
 class Robber extends Character {
@@ -127,6 +133,7 @@ class Robber extends Character {
   }
   
   Robber make() => new Robber();
+  Role get role => Role.ROBBER;
 }
 
 class Troublemaker extends Character {
@@ -143,10 +150,12 @@ class Troublemaker extends Character {
   }
   
   Troublemaker make() => new Troublemaker();
+  Role get role => Role.TROUBLEMAKER;
 }
 
 class Tanner extends Character {
   Tanner make() => new Tanner();
+  Role get role => Role.TANNER;
 }
 
 class Drunk extends Character {
@@ -164,12 +173,14 @@ class Drunk extends Character {
   }
   
   Drunk make() => new Drunk();
+  Role get role => Role.DRUNK;
 }
 
 class Hunter extends Character {
   Team team = Team.Villager;
   
   Hunter make() => new Hunter();
+  Role get role => Role.HUNTER;
 }
 
 class Mason extends Character {
@@ -184,6 +195,7 @@ class Mason extends Character {
   } 
   
   Mason make() => new Mason(); 
+  Role get role => Role.MASON;
 }
 
 class Insomniac extends Character {
@@ -197,6 +209,7 @@ class Insomniac extends Character {
   } 
   
   Insomniac make() => new Insomniac();
+  Role get role => Role.INSOMNIAC;
 }
 
 class Minion extends Character {
@@ -211,6 +224,7 @@ class Minion extends Character {
   } 
   
   Minion make() => new Minion();
+  Role get role => Role.MINION;
 }
 
 class Doppelganger extends Character {
@@ -232,6 +246,7 @@ class Doppelganger extends Character {
   }
   
   Doppelganger make() => new Doppelganger();
+  Role get role => Role.DOPPELGANGER;
 }
 
 class Characters {
