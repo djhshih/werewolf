@@ -314,7 +314,7 @@ class Characters {
     for (int i = 0; i < nPlayers; i++) {
       Character x = characters[i];
       if (x.runtimeType == m.runtimeType) {
-        if (targetSets[i].isNotEmpty) {
+        if (targetSets[i].isNotEmpty && x.validTargets(targetSets[i], cs)) {
           x.act(targetSets[i], cs, revelationSets[i]);
         } else {
           x.actRandomly(cs, revelationSets[i]);
@@ -334,7 +334,6 @@ class Characters {
     return xs;
   }
   
-
   bool validPlayer(int i) =>  i >= 0 && i < nPlayers;
   bool validUnclaimed(int i) =>  i >= nPlayers && i < characters.length;
   bool validCard(int i) => i >= 0 && i < characters.length;
