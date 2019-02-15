@@ -55,6 +55,8 @@ class Character {
   
   void actRandomly(Characters cs, Map<int, Character> revelations) => act([], cs, revelations);
   
+  bool validTargets(List<int> targets, Characters cs) => targets.isEmpty;
+  
   Character make() => new Character();
   Role get role => Role.UNKNOWN;
 }
@@ -111,6 +113,14 @@ class Seer extends Character {
     }
     act(targets, cs, revelations);
   }
+  
+  bool validTargets(List<int> targets, Characters cs) {
+    if (targets.length == 1) {
+      return targets[0] != index && cs.validPlayer(targets[0]);
+    }
+    // otherwise, all targets must be unclaimed cards
+    return targets.every(cs.validUnclaimed);
+  }
    
   Seer make() => new Seer();
   Role get role => Role.SEER;
@@ -132,6 +142,9 @@ class Robber extends Character {
     act([chooseOtherPlayer(cs, index)], cs, revelations);
   }
   
+  bool validTargets(List<int> targets, Characters cs) =>
+    targets.length == 1 && cs.validPlayer(targets[0]);
+  
   Robber make() => new Robber();
   Role get role => Role.ROBBER;
 }
@@ -148,6 +161,9 @@ class Troublemaker extends Character {
   void actRandomly(Characters cs, Map<int, Character> revelations) {
     act(chooseTwoOtherPlayers(cs, index), cs, revelations);  
   }
+  
+  bool validTargets(List<int> targets, Characters cs) =>
+    targets.length == 2 && targets.every((t) => t != index && cs.validPlayer(t));
   
   Troublemaker make() => new Troublemaker();
   Role get role => Role.TROUBLEMAKER;
@@ -171,6 +187,9 @@ class Drunk extends Character {
   void actRandomly(Characters cs, Map<int, Character> revelations) {
     act([chooseUnclaimed(cs)], cs, revelations);  
   }
+  
+  bool validTargets(List<int> targets, Characters cs) =>
+    targets.length == 1 && cs.validUnclaimed(targets[0]);
   
   Drunk make() => new Drunk();
   Role get role => Role.DRUNK;
@@ -245,6 +264,9 @@ class Doppelganger extends Character {
     act([chooseOtherPlayer(cs, index)], cs, revelations);
   }
   
+  bool validTargets(List<int> targets, Characters cs) =>
+    targets.length == 1 && cs.validPlayer(targets[0]);
+  
   Doppelganger make() => new Doppelganger();
   Role get role => Role.DOPPELGANGER;
 }
@@ -311,6 +333,11 @@ class Characters {
     } 
     return xs;
   }
+  
+
+  bool validPlayer(int i) =>  i >= 0 && i < nPlayers;
+  bool validUnclaimed(int i) =>  i >= nPlayers && i < characters.length;
+  bool validCard(int i) => i >= 0 && i < characters.length;
 
   Iterable<String> toStrings() =>
     characters.map((c) => c.runtimeType.toString());

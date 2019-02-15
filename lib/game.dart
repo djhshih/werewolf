@@ -52,14 +52,12 @@ class Game {
     phase = GamePhase.Night;
   }
   
-  bool validPlayer(int player) =>
-    player >= 0 && player < originals.nPlayers;
+  bool validPlayer(int player) => originals.validPlayer(player);
 
-  bool validCard(int target) =>
-    target >= 0 && target < originals.characters.length;
+  bool validCard(int target) => originals.validCard(target);
 
   bool castVote(int player, int suspect) {
-    if (validPlayer(player) && validPlayer(suspect)) {
+    if (finals.validPlayer(player) && finals.validPlayer(suspect)) {
       votes[player] = suspect;
       return true;
     }

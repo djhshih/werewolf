@@ -119,8 +119,7 @@ class WerewolfService extends WerewolfServiceBase {
     }
     
     if (game.phase == GamePhase.Night && !ready[player]) {
-      // TODO Enforce stricter target choice (e.g. player vs. unclaimed and number of targets)
-      if (request.targets.every(game.validCard)) {
+      if (game.originals.character(player).validTargets(request.targets, game.originals)) {
         // record the player's chosen targets
         game.targetSets[player] = request.targets;
         // mark player as ready 
