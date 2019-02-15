@@ -30,6 +30,16 @@ int chooseUnclaimed(Characters cs) {
   return chooseRandomly(cs.characters.length - cs.nPlayers) + cs.nPlayers;
 }
 
+List<int> chooseTwoUnclaimed(Characters cs) {
+  List<int> xs = new List(2);
+  xs[0] = chooseRandomly(cs.characters.length - cs.nPlayers) + cs.nPlayers;
+  do {
+    xs[1] = chooseRandomly(cs.characters.length - cs.nPlayers) + cs.nPlayers;
+  } while (xs[0] == xs[1]);
+  
+  return xs;
+}
+
 
 enum Team { Independent, Villager, Werewolf }
 
@@ -84,9 +94,17 @@ class Seer extends Character {
     }
   }
   
-  // TODO Allow Seer to randomly choose two unclaimed cards.
   void actRandomly(Characters cs, Map<int, Character> revelations) {
-    act([chooseOtherPlayer(cs, index)], cs, revelations);  
+    Random r = new Random();
+    List<int> targets;
+    if (r.nextBool()) {
+      // randomly choose another player
+      targets = [chooseOtherPlayer(cs, index)];
+    } else {
+      // randomly choose two unclaimed cards
+      targets = chooseTwoUnclaimed(cs);
+    }
+    act(targets, cs, revelations);
   }
    
   Seer make() => new Seer();
