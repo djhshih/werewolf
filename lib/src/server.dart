@@ -9,6 +9,8 @@ import 'generated/werewolf.pb.dart';
 import 'generated/werewolf.pbenum.dart';
 import 'generated/werewolf.pbgrpc.dart';
 
+// TODO Let game continue for multiple rounds
+
 class WerewolfService extends WerewolfServiceBase {
   Game game;
   List<Character> cards;
