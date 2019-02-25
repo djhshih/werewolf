@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'src/player.dart';
 import 'src/controller.dart';
 import 'src/generated/werewolf.pbenum.dart';
 
@@ -234,18 +235,20 @@ class Characters {
 
   // Wake up players with a matching character and
   // allow them to perform their actions
-  void wake(Character m, Characters cs, List<List<int>> targetSets, List<Map<int, Character>> revelationSets) {
+  //void wake(Character m, Characters cs, List<List<int>> targetSets, List<Map<int, Character>> revelationSets) {
+  void wake(Character m, Characters cs, List<Player> players) {
     for (int i = 0; i < nPlayers; i++) {
       Character x = characters[i];
       if (x.runtimeType == m.runtimeType) {
+        var player = players[i];
         List<int> targets;
-        if (targetSets[i].isNotEmpty && x.validTargets(targetSets[i], cs)) {
-          targets = targetSets[i];
+        if (player.targets.isNotEmpty && x.validTargets(player.targets, cs)) {
+          targets = player.targets;
         } else {
           var controller = Controller(x);
           targets = controller.choose(cs);
         }
-        x.act(targets, cs, revelationSets[i]);
+        x.act(targets, cs, player.revelations);
       }
     }
   }

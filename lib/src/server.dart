@@ -123,7 +123,7 @@ class WerewolfService extends WerewolfServiceBase {
     if (game.phase == GamePhase.Night && !ready[player]) {
       if (game.originals.character(player).validTargets(request.targets, game.originals)) {
         // record the player's chosen targets
-        game.targetSets[player] = request.targets;
+        game.players[player].targets = request.targets;
         // mark player as ready 
         setReady(player);
         // wait to allow game phase to change
@@ -137,7 +137,7 @@ class WerewolfService extends WerewolfServiceBase {
       print(' INFO: Instructing player ${player} to Wait for game phase to change to Day');
       effect.status = Status.WAIT;
     } else {
-      var revelations = game.revelationSets[player];
+      var revelations = game.players[player].revelations;
       print('DEBUG: revelations: ${revelations}');
       for (var i in revelations.keys) {
         effect.revelations.add(
@@ -179,7 +179,7 @@ class WerewolfService extends WerewolfServiceBase {
       return verdict..status = Status.WAIT;
     } else {
       verdict
-        ..votes.addAll(game.votes)
+        ..votes.addAll(game.players.map((p) => p.vote))
         ..winners.addAll(game.winners)
         ..deads.addAll(game.deads)
         ..roles.addAll( game.finals.characters.map((x) => x.role) );

@@ -1,6 +1,8 @@
+import 'dart:math';
+
+import 'src/player.dart';
 import 'character.dart';
 
-import 'dart:math';
 
 enum GamePhase {
   Initial, Night, Day, Finale
@@ -11,15 +13,8 @@ class Game {
   Characters finals;
   
   Random random;
-  
-  // each player's targets
-  List<List<int>> targetSets;
-  
-  // each player's revelations
-  List<Map<int, Character>> revelationSets;
-  
-  // each player's vote (each represented as a player index)
-  List<int> votes;
+
+  List<Player> players;
   
   GamePhase phase = GamePhase.Initial;
   
@@ -36,17 +31,12 @@ class Game {
     
     int nPlayers = originals.nPlayers;
     
-    // It is okay to assign the same empty set to all targets initially,
-    // because we will re-assign each element to a new list instead of appending to the list.
-    targetSets = new List.filled(nPlayers, []);
-    votes = new List.filled(nPlayers, -1);
-    
-    // This will assign same list to each element!
-    //     revelationSets = new List.filled(nPlayers, {});
-    // Therefore, do explicit loop
-    revelationSets = new List(nPlayers);
-    for (int i = 0; i < nPlayers; i++) {
-      revelationSets[i] = new Map();
+    // NB Manual for loop here because we need to create
+    //    multiple instances of player.
+    //    Using List.filled will create only one.
+    players = List(nPlayers);
+    for (int i = 0; i < nPlayers; ++i) {
+      players[i] = Player();
     }
     
     phase = GamePhase.Night;
@@ -58,7 +48,7 @@ class Game {
 
   bool castVote(int player, int suspect) {
     if (finals.validPlayer(player) && finals.validPlayer(suspect)) {
-      votes[player] = suspect;
+      players[player].vote = suspect;
       return true;
     }
     return false;
@@ -83,24 +73,27 @@ class Game {
   
   // Night phase: wake up players in order of their characters.
   void night() {
-    originals.wake(new Doppelganger(), originals, targetSets, revelationSets);
+    originals.wake(new Doppelganger(), originals, players);
     
     // create a new copy of the characters to avoid characters'
     // actions to interfere during the night phase
     List<Character> finalCharacters = List.from(originals.characters);
     finals = new Characters(originals.nPlayers, finalCharacters);
     
-    originals.wake(new Werewolf(), finals, targetSets, revelationSets);
-    originals.wake(new Minion(), finals, targetSets, revelationSets);
-    originals.wake(new Mason(), finals, targetSets, revelationSets);
-    originals.wake(new Seer(), finals, targetSets, revelationSets);
-    originals.wake(new Robber(), finals, targetSets, revelationSets);
-    originals.wake(new Troublemaker(), finals, targetSets, revelationSets);
-    originals.wake(new Drunk(), finals, targetSets, revelationSets);
-    originals.wake(new Insomniac(), finals, targetSets, revelationSets);
+    originals.wake(new Werewolf(), finals, players);
+    originals.wake(new Minion(), finals, players);
+    originals.wake(new Mason(), finals, players);
+    originals.wake(new Seer(), finals, players);
+    originals.wake(new Robber(), finals, players);
+    originals.wake(new Troublemaker(), finals, players);
+    originals.wake(new Drunk(), finals, players);
+    originals.wake(new Insomniac(), finals, players);
     
-    print('DEBUG: revelationSets: ${revelationSets}');
-    print('DEBUG: targetSets: ${targetSets}');
+    print('DEBUG: players:');
+    for (int i = 0; i < players.length; ++i) {
+      Player p = players[i];
+      print('$i: ${p.targets} ${p.revelations}');
+    }
     
     phase = GamePhase.Day;
   }
@@ -135,8 +128,8 @@ class Game {
     // if no vote, generate random vote
     Random r = Random();
     for (int i = 0; i < cs.nPlayers; i++) {
-      if (votes[i] == -1) {
-        votes[i] = r.nextInt(cs.nPlayers); 
+      if (players[i].vote == -1) {
+        players[i].vote = r.nextInt(cs.nPlayers); 
       }
     }
   }
@@ -144,16 +137,16 @@ class Game {
   // Lynch players with highest votes.
   void lynch() {
     final cs = finals; 
-    int n = votes.length;
+    int n = players.length;
     deads = new List();
     
     // count the votes
     List<int> counts = new List.filled(n, 0); 
-    for (int vote in votes) {
-      counts[vote] += 1;
+    for (var p in players) {
+      counts[p.vote] += 1;
     }
 
-    print('DEBUG: Votes $counts');
+    print('DEBUG: Vote counts $counts');
     
     int maxCount = counts.reduce(max);
     
@@ -169,8 +162,8 @@ class Game {
     List<int> taken = new List();
     for (int i in deads) {
       if (cs.character(i) is Hunter) {
-        print(' INFO: Hunter $i takes down player ${votes[i]}.');
-        taken.add(votes[i]);
+        print(' INFO: Hunter $i takes down player ${players[i].vote}.');
+        taken.add(players[i].vote);
       }
     }
     // NB duplicate can occur here, but it is inconsequential
