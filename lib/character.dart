@@ -1,46 +1,7 @@
 import 'dart:math';
 
+import 'src/controller.dart';
 import 'src/generated/werewolf.pbenum.dart';
-
-int chooseRandomly(int n) {
-    Random r = new Random();
-    return r.nextInt(n);
-}
-
-int chooseOtherPlayer(Characters cs, int index) {
-  int i = 0;
-  do {
-    i = chooseRandomly(cs.nPlayers);
-  } while (i == index);
-  
-  return i;
-}
-
-List<int> chooseTwoOtherPlayers(Characters cs, int index) {
-  List<int> xs = new List(2);
-  do {
-    xs[0] = chooseRandomly(cs.nPlayers);
-  } while (xs[0] == index);
-  do {
-    xs[1] = chooseRandomly(cs.nPlayers);
-  } while (xs[1] == index || xs[1] == xs[0]);
-  
-  return xs;
-}
-
-int chooseUnclaimed(Characters cs) {
-  return chooseRandomly(cs.characters.length - cs.nPlayers) + cs.nPlayers;
-}
-
-List<int> chooseTwoUnclaimed(Characters cs) {
-  List<int> xs = new List(2);
-  xs[0] = chooseRandomly(cs.characters.length - cs.nPlayers) + cs.nPlayers;
-  do {
-    xs[1] = chooseRandomly(cs.characters.length - cs.nPlayers) + cs.nPlayers;
-  } while (xs[0] == xs[1]);
-  
-  return xs;
-}
 
 
 enum Team { Independent, Villager, Werewolf }
@@ -53,8 +14,6 @@ class Character {
     return;
   }
   
-  void actRandomly(Characters cs, Map<int, Character> revelations) => act([], cs, revelations);
-  
   bool validTargets(List<int> targets, Characters cs) => targets.isEmpty;
   
   Character make() => new Character();
@@ -66,12 +25,6 @@ class Villager extends Character {
   
   Villager make() => new Villager();
   Role get role => Role.VILLAGER;
-}
-
-void addRevelations(List<int> xs, Characters cs, Map<int, Character> revelations) {
-  for (int i in xs) {
-    revelations[i] = cs.character(i);
-  }
 }
 
 class Werewolf extends Character {
@@ -101,19 +54,6 @@ class Seer extends Character {
     }
   }
   
-  void actRandomly(Characters cs, Map<int, Character> revelations) {
-    Random r = new Random();
-    List<int> targets;
-    if (r.nextBool()) {
-      // randomly choose another player
-      targets = [chooseOtherPlayer(cs, index)];
-    } else {
-      // randomly choose two unclaimed cards
-      targets = chooseTwoUnclaimed(cs);
-    }
-    act(targets, cs, revelations);
-  }
-  
   bool validTargets(List<int> targets, Characters cs) {
     if (targets.length == 1) {
       return targets[0] != index && cs.validPlayer(targets[0]);
@@ -138,10 +78,6 @@ class Robber extends Character {
     print(' INFO: Player $index sees ${cs.character(index)}.');
   }
   
-  void actRandomly(Characters cs, Map<int, Character> revelations) {
-    act([chooseOtherPlayer(cs, index)], cs, revelations);
-  }
-  
   bool validTargets(List<int> targets, Characters cs) =>
     targets.length == 1 && cs.validPlayer(targets[0]);
   
@@ -156,10 +92,6 @@ class Troublemaker extends Character {
     cs.swap(targets[0], targets[1]);
     
     print('DEBUG: Player $index (${this}) swaps two other players\' cards (${targets[0]}, ${targets[1]}).');
-  }
-
-  void actRandomly(Characters cs, Map<int, Character> revelations) {
-    act(chooseTwoOtherPlayers(cs, index), cs, revelations);  
   }
   
   bool validTargets(List<int> targets, Characters cs) =>
@@ -183,10 +115,6 @@ class Drunk extends Character {
     
     print('DEBUG: Player $index (${this}) swaps own card with an unclaimed card ($i).');
   } 
-  
-  void actRandomly(Characters cs, Map<int, Character> revelations) {
-    act([chooseUnclaimed(cs)], cs, revelations);  
-  }
   
   bool validTargets(List<int> targets, Characters cs) =>
     targets.length == 1 && cs.validUnclaimed(targets[0]);
@@ -260,10 +188,6 @@ class Doppelganger extends Character {
     print(' INFO: Player $index becomes ${cs.character(index)}.');
   } 
   
-  void actRandomly(Characters cs, Map<int, Character> revelations) {
-    act([chooseOtherPlayer(cs, index)], cs, revelations);
-  }
-  
   bool validTargets(List<int> targets, Characters cs) =>
     targets.length == 1 && cs.validPlayer(targets[0]);
   
@@ -314,11 +238,14 @@ class Characters {
     for (int i = 0; i < nPlayers; i++) {
       Character x = characters[i];
       if (x.runtimeType == m.runtimeType) {
+        List<int> targets;
         if (targetSets[i].isNotEmpty && x.validTargets(targetSets[i], cs)) {
-          x.act(targetSets[i], cs, revelationSets[i]);
+          targets = targetSets[i];
         } else {
-          x.actRandomly(cs, revelationSets[i]);
+          Controller controller = makeController(x);
+          targets = controller.choose(cs);
         }
+        x.act(targets, cs, revelationSets[i]);
       }
     }
   }
@@ -340,4 +267,10 @@ class Characters {
 
   Iterable<String> toStrings() =>
     characters.map((c) => c.runtimeType.toString());
+}
+
+void addRevelations(List<int> xs, Characters cs, Map<int, Character> revelations) {
+  for (int i in xs) {
+    revelations[i] = cs.character(i);
+  }
 }
