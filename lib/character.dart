@@ -242,7 +242,7 @@ class Characters {
         if (targetSets[i].isNotEmpty && x.validTargets(targetSets[i], cs)) {
           targets = targetSets[i];
         } else {
-          Controller controller = makeController(x);
+          var controller = Controller(x);
           targets = controller.choose(cs);
         }
         x.act(targets, cs, revelationSets[i]);

@@ -2,35 +2,34 @@ import 'dart:math';
 
 import 'package:werewolf/character.dart';
 
-
-Controller makeController(Character c) {
-  switch (c.runtimeType) {
-    case Seer:
-      return SeerController(c);
-    case Robber:
-      return RobberController(c);
-    case Troublemaker:
-      return TroublemakerController(c);
-    case Drunk:
-      return DrunkController(c);
-    case Doppelganger:
-      return DoppelgangerController(c);
-    default:
-      return Controller(c);
-  }
-}
-
 class Controller {
   Random _random = Random();
   Character character;
+
+  factory Controller(Character c) {
+    switch (c.runtimeType) {
+      case Seer:
+        return SeerController(c);
+      case Robber:
+        return RobberController(c);
+      case Troublemaker:
+        return TroublemakerController(c);
+      case Drunk:
+        return DrunkController(c);
+      case Doppelganger:
+        return DoppelgangerController(c);
+      default:
+        return Controller._internal(c);
+    }
+  }
   
-  Controller(this.character);
+  Controller._internal(this.character);
   
   List<int> choose(Characters cs) => const [];
 }
 
 class SeerController extends Controller {
-  SeerController(Character c): super(c);
+  SeerController(Character c): super._internal(c);
   List<int> choose(Characters cs) {
     if (_random.nextBool()) {
       // randomly choose another player
@@ -42,25 +41,25 @@ class SeerController extends Controller {
 }
 
 class RobberController extends Controller {
-  RobberController(Character c): super(c);
+  RobberController(Character c): super._internal(c);
   List<int> choose(Characters cs) =>
     [chooseOtherPlayer(cs, character.index, _random)];
 }
 
 class TroublemakerController extends Controller {
-  TroublemakerController(Character c): super(c);
+  TroublemakerController(Character c): super._internal(c);
   List<int> choose(Characters cs) =>
     chooseTwoOtherPlayers(cs, character.index, _random);
 }
 
 class DrunkController extends Controller {
-  DrunkController(Character c): super(c);
+  DrunkController(Character c): super._internal(c);
   List<int> choose(Characters cs) =>
     [chooseUnclaimed(cs, _random)];
 }
 
 class DoppelgangerController extends Controller {
-  DoppelgangerController(Character c): super(c);
+  DoppelgangerController(Character c): super._internal(c);
   List<int> choose(Characters cs) =>
     [chooseOtherPlayer(cs, character.index, _random)];
 }
